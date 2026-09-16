@@ -1,0 +1,685 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Memoria Lūciae — I · In Portū (Participles)</title>
+<style>
+*{box-sizing:border-box;}
+body{margin:0;font-family:Georgia,'Times New Roman',serif;background:#f5f0e8;color:#2c1a0e;line-height:1.6;}
+#topbar{position:sticky;top:0;z-index:20;background:#2c1a0e;color:#f5f0e8;display:flex;align-items:center;gap:14px;padding:10px 18px;flex-wrap:wrap;}
+#topbar h1{font-size:1rem;margin:0;letter-spacing:.02em;}
+.badge{background:#5d4429;border-radius:20px;padding:3px 12px;font-size:.72rem;}
+.spacer{flex:1;}
+.tb-btn{background:none;border:1px solid #8a6f52;color:#f5f0e8;border-radius:6px;padding:5px 12px;font-size:.75rem;cursor:pointer;font-family:inherit;}
+.tb-btn:hover{background:#4a2d15;}
+#score{font-size:.76rem;color:#e0cdb0;}
+#progwrap{height:4px;background:#4a2d15;width:100%;}
+#prog{height:100%;background:#c9920a;width:0;transition:width .3s;}
+
+#page{max-width:1180px;margin:0 auto;padding:22px 20px 70px;}
+.layout{display:grid;grid-template-columns:225px 1fr;gap:26px;align-items:start;}
+@media(max-width:860px){.layout{grid-template-columns:1fr;}.vocab-col{order:2;}}
+
+.vocab-bar{background:#f0e8d8;border:1px solid #c8a97e;border-radius:9px;padding:13px;position:sticky;top:64px;}
+.vocab-bar h4{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:#7a5c3a;margin:0 0 9px;}
+.vb-row{margin-bottom:7px;font-size:.79rem;line-height:1.35;}
+.vb-lat{font-weight:700;font-style:italic;}
+.vb-def{color:#6b5236;font-size:.75rem;}
+.vt-n{background:#c9920a;color:#fff;border-radius:3px;padding:0 5px;font-size:.6rem;margin-left:4px;vertical-align:1px;}
+.vb-note{font-size:.67rem;color:#9a7b55;font-style:italic;margin-top:9px;border-top:1px solid #d9c4a3;padding-top:7px;}
+
+.card{background:#fffdf7;border:1px solid #c8a97e;border-radius:11px;padding:20px 24px;margin-bottom:18px;}
+.scene-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.11em;color:#7a5c3a;margin-bottom:12px;font-weight:700;}
+p.latin{font-size:1.09rem;line-height:1.95;margin:0 0 14px;}
+.sp{color:#6a4a8a;font-style:italic;}
+.pt{border-bottom:2px dotted #c9920a;}
+.glosses{background:#f6efe2;border-left:3px solid #c8a97e;padding:9px 13px;font-size:.81rem;margin-bottom:8px;border-radius:0 6px 6px 0;}
+
+.memoria{background:#efe9f4;border:1px solid #b4a2c8;border-left:5px solid #6a4a8a;border-radius:0 9px 9px 0;padding:15px 20px;margin:20px 0;}
+.memoria h4{margin:0 0 8px;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:#6a4a8a;}
+.memoria p{margin:0;font-size:1.06rem;line-height:1.9;font-style:italic;color:#3b2a52;}
+.mem-eng{font-size:.79rem;color:#6a5a80;margin-top:9px!important;font-style:normal;}
+
+/* ── questions ── */
+.qblock{margin-top:6px;}
+.qb-h{font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:#7a5c3a;font-weight:700;margin:20px 0 10px;border-top:1px solid #e0cdb0;padding-top:13px;}
+.q{background:#fff;border:1px solid #d9c4a3;border-radius:9px;padding:13px 16px;margin-bottom:11px;}
+.q.done{border-color:#7fa06a;background:#fbfdf9;}
+.q.miss{border-color:#c98a8a;}
+.q-num{font-size:.67rem;font-weight:700;color:#a58a63;text-transform:uppercase;letter-spacing:.07em;}
+.q-text{font-size:.93rem;margin:5px 0 10px;}
+.q-text em{font-style:italic;}
+.q-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+input.ans{flex:1;min-width:170px;padding:8px 11px;border:1.5px solid #c8a97e;border-radius:6px;font-family:inherit;font-size:.95rem;font-style:italic;background:#fffdf7;}
+textarea.ans{width:100%;padding:9px 11px;border:1.5px solid #c8a97e;border-radius:6px;font-family:inherit;font-size:.9rem;resize:vertical;background:#fffdf7;}
+.btn{background:#7a5c3a;color:#f5f0e8;border:none;border-radius:6px;padding:8px 15px;font-size:.79rem;cursor:pointer;font-family:inherit;}
+.btn:hover{background:#5d4429;}
+.btn.ghost{background:#fff;color:#7a5c3a;border:1.5px solid #c8a97e;}
+.btn.ghost:hover{background:#f0e8d8;}
+.btn:disabled{opacity:.5;cursor:default;}
+.opt{display:block;width:100%;text-align:left;background:#fffdf7;border:1.5px solid #c8a97e;border-radius:7px;padding:9px 13px;margin-bottom:6px;font-family:inherit;font-size:.9rem;cursor:pointer;}
+.opt:hover:not(:disabled){background:#f0e0c0;}
+.opt.ok{background:#d9edcf;border-color:#5f8a48;}
+.opt.no{background:#f6d9d9;border-color:#b45c5c;}
+.chip{background:#fffdf7;border:1.5px solid #c8a97e;border-radius:6px;padding:6px 14px;font-family:inherit;font-size:.88rem;font-style:italic;cursor:pointer;}
+.chip:hover:not(:disabled){background:#f0e0c0;}
+.chip.ok{background:#d9edcf;border-color:#5f8a48;}
+.chip.no{background:#f6d9d9;border-color:#b45c5c;}
+.fb{font-size:.83rem;margin-top:9px;padding:9px 12px;border-radius:6px;display:none;line-height:1.55;}
+.fb.show{display:block;}
+.fb.good{background:#e9f4e3;color:#2d4a1e;}
+.fb.bad{background:#f9e7e7;color:#6d2020;}
+.fb.model{background:#f2edf7;color:#3b2a52;border-left:3px solid #6a4a8a;}
+.fb .mlabel{font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px;}
+.checklist{margin:9px 0 0;padding:0;list-style:none;}
+.checklist li{font-size:.82rem;margin-bottom:4px;}
+.checklist input{margin-right:7px;}
+.ev{margin-top:8px;font-style:italic;font-size:.88rem;color:#3b2a52;border-left:3px solid #b4a2c8;padding-left:10px;}
+.qb-h.lf{color:#6a4a8a;border-top-color:#b4a2c8;}
+.hintline{font-size:.78rem;color:#8a6f52;font-style:italic;margin-top:8px;display:none;}
+.hintline.show{display:block;}
+
+.navbar{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:22px;flex-wrap:wrap;}
+.secnav{display:flex;gap:6px;flex-wrap:wrap;}
+.secnav button{background:#fff;border:1.5px solid #c8a97e;color:#7a5c3a;border-radius:6px;padding:6px 12px;font-size:.76rem;cursor:pointer;font-family:inherit;}
+.secnav button.cur{background:#2c1a0e;color:#f5f0e8;border-color:#2c1a0e;}
+.secnav button.ok{border-color:#7fa06a;}
+
+.home h2{font-size:1.9rem;margin:0 0 6px;text-align:center;}
+.home .sub{text-align:center;color:#7a5c3a;font-style:italic;margin-bottom:26px;}
+.home-card{background:#fffdf7;border:1px solid #c8a97e;border-radius:11px;padding:24px;max-width:620px;margin:0 auto 18px;}
+.how{font-size:.88rem;line-height:1.75;}
+.how b{color:#2c1a0e;}
+.ex-sent{background:#fff8e6;border-left:3px solid #c9920a;padding:10px 14px;margin:11px 0;border-radius:0 6px 6px 0;font-size:.95rem;}
+.ex-sent .eng{display:block;color:#6b5236;font-size:.8rem;font-style:normal;margin-top:5px;}
+table.vt{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem;}
+table.vt th,table.vt td{border:1px solid #c8a97e;padding:6px 10px;text-align:left;}
+table.vt th{background:#f0e8d8;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;}
+
+#print-body{display:none;}
+@media print{
+  #topbar,#progwrap,.navbar,.vocab-col,.btn,.opt,.chip,input.ans,textarea.ans,.hintline{display:none!important;}
+  #page{display:none!important;}
+  #print-body{display:block!important;font-family:Arial,sans-serif;font-size:9.5pt;color:#000;}
+  .pw-h{font-size:13pt;font-weight:bold;margin-bottom:3pt;}
+  .pw-sub{font-size:8.5pt;color:#333;margin-bottom:10pt;}
+  .pw-sec{font-size:10.5pt;font-weight:bold;margin:12pt 0 4pt;border-bottom:1pt solid #000;}
+  .pw-para{font-size:9.5pt;line-height:1.5;margin-bottom:5pt;text-align:justify;}
+  .pw-q{margin-bottom:7pt;page-break-inside:avoid;}
+  .pw-qt{font-size:9pt;font-weight:bold;}
+  .pw-mine{font-size:9pt;font-style:italic;border-bottom:.5pt solid #999;padding:2pt 0;}
+  .pw-model{font-size:8.5pt;color:#333;padding-left:10pt;border-left:2pt solid #999;margin-top:2pt;}
+  .pw-qh{font-size:8.5pt;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;margin:8pt 0 3pt;}
+  .pw-mem{border:1.5pt solid #000;padding:7pt;margin:8pt 0;font-style:italic;}
+}
+</style></head><body>
+
+<div id="topbar">
+  <h1>Memoria Lūciae · I</h1>
+  <span class="badge">Stage 23 — Participles</span>
+  <span class="spacer"></span>
+  <span id="score"></span>
+  <button class="tb-btn" onclick="doPrint()">🖨 Print my work</button>
+</div>
+<div id="progwrap"><div id="prog"></div></div>
+
+<div id="page"></div>
+<div id="print-body"></div>
+
+<script>
+/* ═══ helpers ═══ */
+const $ = id => document.getElementById(id);
+const pg = () => $('page');
+const pt = t => `<span class="pt">${t}</span>`;          /* participle highlight */
+const sp = t => `<span class="sp">${t}</span>`;          /* speech */
+const norm = s => s.toLowerCase().trim()
+  .replace(/[āăá]/g,'a').replace(/[ēĕé]/g,'e').replace(/[īĭí]/g,'i')
+  .replace(/[ōŏó]/g,'o').replace(/[ūŭú]/g,'u').replace(/[^a-z ]/g,'').replace(/\s+/g,' ');
+
+/* ═══ episode vocabulary ═══ */
+const VB = [
+  ['Tarracō, Tarracōne','Tarraco, in Spain',0,'Tarrac'],
+  ['Hispānia, -ae','Spain',0,'Hispan'],
+  ['portus, -ūs','harbour',0,'port'],
+  ['Claudia, -ae','the widow who took Lucia in',0,'Claudi'],
+  ['Lūcia, -ae','of Pompeii',0,'Luci'],
+  ['urna, -ae','jar (St 14)',0,'urna|urnae|urnam'],
+  ['plēnus, -a, -um *','full of (+ abl.)',0,'plēn'],
+  ['pōculum, -ī *','cup',0,'pōculum|pocul'],
+  ['male *','badly',0,'male'],
+  ['manus, manūs (f.) *','hand — 4th decl.',0,'manus|manum|manū'],
+  ['sēcum *','with him / her',0,'sēcum'],
+  ['iterum *','again',0,'iterum'],
+  ['memoriā teneō','remember (St 22)',0,'memoriā'],
+  ['frangō → frāctus','break → broken (St 17)',0,'frāct|frang|frēgit'],
+  ['urbs, urbis','city (St 4)',0,'urbs'],
+  ['merx, mercis','goods, cargo (St 18)',0,'mercē|mercī'],
+  ['taberna, -ae','shop (St 3)',0,'tabern'],
+  ['cotīdiē','every day (St 4)',0,'cotīdiē'],
+  ['tacet / tacuit','is silent (St 8)',0,'tacu|tacit'],
+  ['-ns, -ntēs','…-ing  (PAP)',1,'ns |ntēs|ntem|nte '],
+  ['-tus, -ta, -tum','having been …-ed  (PPP)',1,'tus |ta |tum |tae |tī '],
+  ['-ūrus, -ūra','about to …  (FAP)',1,'ūr'],
+];
+function vocabBar(txt){
+  const clean=(txt||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
+  const rows = VB.filter(([l,d,n,st]) => st.split('|').some(x => clean.includes(x)));
+  const use = rows.length ? rows : VB;
+  return `<div class="vocab-bar"><h4>📌 On this page</h4>
+    ${use.map(([l,d,n])=>`<div class="vb-row"><span class="vb-lat">${l}</span>${n?'<span class="vt-n">PTC</span>':''}<br><span class="vb-def">${d}</span></div>`).join('')}
+    <div class="vb-note">Only words on this page are listed. <span class="vt-n" style="vertical-align:baseline">PTC</span> = today's grammar: the participle. <b>*</b> = not on your Stages 1–23 lists; glossed under the paragraph.</div></div>`;
+}
+
+/* ═══ STORY + QUESTIONS ═══
+   question kinds — all self-checking:
+     fill  : type the Latin from the text     → auto-marked
+     spot  : click the right word             → auto-marked
+     label : choose PAP / PPP / FAP           → auto-marked
+     mc    : choose the best answer           → auto-marked
+     write : type, then compare to a model    → self-marked
+   ═══════════════════════════════════════ */
+
+const SECTIONS = [
+{
+  title:'Pars I — In Portū',
+  paras:[
+    { html:`<p class="latin">
+        hodiē Lūcia in portū stābat, nāvēs ${pt('spectāns')}. cotīdiē ad portum ambulābat,
+        quod nāvēs spectāre amābat. Tarracō urbs magna erat, turba mercātōrum et nautārum.
+        Claudia, fēmina Tarracōnis, Lūciam in domum dūxerat et cūrābat;
+        sed Lūcia in domō manēre nōn poterat.
+      </p>`,
+      glosses:[],
+      comp:[
+        {k:'comp', q:'Where was Lucia standing?', min:8,
+         model:'In the harbour, watching the ships.', lat:'Lūcia in portū stābat, nāvēs spectāns'},
+        {k:'comp', q:'Why does she go to the harbour every day?', min:12,
+         model:'Because she loves to watch the ships.', lat:'quod nāvēs spectāre amābat'},
+        {k:'comp', q:'Who is Claudia, and what had she done for Lucia?', min:15,
+         model:'A woman of Tarraco. She had taken Lucia into her house and was looking after her.',
+         lat:'Claudia, fēmina Tarracōnis, Lūciam in domum dūxerat et cūrābat'},
+        {k:'comp', q:'What is the one thing Lucia cannot do?', min:10,
+         model:'Stay in the house.', lat:'sed Lūcia in domō manēre nōn poterat'},
+      ]},
+    { html:`<p class="latin">
+        mercātōrēs ${pt('clāmantēs')} per viās contendēbant. nautae fessī in nāvibus labōrābant.
+        Claudia quoque in portū erat, cibum ${pt('petēns')}. Lūciam vocāvit, sed Lūcia nōn audīvit.
+        ${sp('“cotīdiē hīc stās,”')} Claudia inquit. ${sp('“quid quaeris?”')} Lūcia tacuit.
+      </p>`,
+      glosses:[],
+      comp:[
+        {k:'comp', q:'What are the merchants doing?', min:10,
+         model:'Hurrying through the streets, shouting.', lat:'mercātōrēs clāmantēs per viās contendēbant'},
+        {k:'comp', q:'How do the sailors feel, and where are they working?', min:12,
+         model:'They are tired, and they are working on the ships.', lat:'nautae fessī in nāvibus labōrābant'},
+        {k:'comp', q:'Why is Claudia in the harbour?', min:10,
+         model:'She is looking for food.', lat:'Claudia quoque in portū erat, cibum petēns'},
+        {k:'comp', q:'What does Claudia ask Lucia, and what does Lucia answer?', min:15,
+         model:'She asks what Lucia is looking for. Lucia says nothing at all.',
+         lat:'“quid quaeris?” Lūcia tacuit'},
+      ]},
+  ],
+  lf:[
+    {k:'spot', q:'Click the participle.', words:['Lūcia','in','portū','stābat','nāvēs','spectāns'], target:5,
+     note:'spectāns — watching. A present participle ends -ns in the nominative, and describes somebody doing something right now.',
+     hint:'Four words here are ordinary nouns. One is a verb with a person ending. The last one is neither.'},
+    {k:'fill', q:'Complete from the text: <em>mercātōrēs ___________ per viās contendēbant.</em>',
+     answer:'clāmantēs', hint:'It ends -ntēs, so it describes more than one person.',
+     note:'clāmantēs — shouting. Plural, because the merchants are plural.'},
+    {k:'mc', q:'<em>nāvēs spectāns</em> — who is doing the watching?',
+     opts:['Lucia — spectāns describes her, and she is the subject.','The ships are watching.','Nobody; spectāns is the main verb.'],
+     correct:0, ok:'Right. A participle always belongs to somebody. Find the person it describes and the sentence opens up.',
+     err:'Not quite. spectāns is not the main verb — stābat is. So spectāns must be describing one of the people.'},
+    {k:'write', q:'Everyone in this harbour is busy. What is Lucia doing instead, and how do the participles show the difference?',
+     min:25, look:['Lucia stands and watches — stābat, spectāns','the others shout, hurry, work, search — clāmantēs, petēns'],
+     model:'Everyone else is in motion: clāmantēs, contendēbant, labōrābant, petēns. Lucia only stands and watches — stābat, spectāns. The participles put her in the middle of a busy place and leave her out of it.'},
+  ]
+},
+{
+  title:'Pars II — Nāvis ē Graeciā',
+  paras:[
+    { html:`<p class="latin">
+        in portū erat nāvis, ē Graeciā nūper ${pt('ducta')}. mercēs ē nāve ${pt('portātae')}
+        in terrā manēbant: urnae vīnō plēnae*, frūmentum multum.
+        nautae, mercēs ${pt('portantēs')}, ad tabernās contendēbant.
+        Lūcia inter urnās ambulābat, verba in urnīs ${pt('scrīpta')} ${pt('legēns')}.
+      </p>`,
+      glosses:[['plēnae*','full of (plēnus, -a, -um + ablative)']],
+      comp:[
+        {k:'comp', q:'Where had the ship come from, and how recently?', min:10,
+         model:'From Greece, and it had been brought in only recently.', lat:'nāvis, ē Graeciā nūper ducta'},
+        {k:'comp', q:'What had been unloaded onto the ground? Name two things.', min:12,
+         model:'Jars full of wine, and a lot of grain.', lat:'urnae vīnō plēnae, frūmentum multum'},
+        {k:'comp', q:'Where are the sailors taking the goods?', min:10,
+         model:'To the shops.', lat:'nautae, mercēs portantēs, ad tabernās contendēbant'},
+        {k:'comp', q:'What is Lucia doing while she walks among the jars?', min:12,
+         model:'Reading the words written on them.', lat:'verba in urnīs scrīpta legēns'},
+      ]},
+    { html:`<p class="latin">
+        subitō nauta fessus urnam ēmīsit et frēgit. Lūcia stetit.
+        nihil aliud vidēre poterat — nōn nāvēs, nōn nautās, nōn Claudiam ${pt('vocantem')}.
+        aliud vidēbat: nōn hīc, nōn nunc.
+      </p>`,
+      glosses:[],
+      comp:[
+        {k:'comp', q:'What does the tired sailor do?', min:8,
+         model:'He drops a jar and breaks it.', lat:'nauta fessus urnam ēmīsit et frēgit'},
+        {k:'comp', q:'What happens to Lucia the moment she sees it?', min:12,
+         model:'She stops still, and cannot see anything else.', lat:'Lūcia stetit. nihil aliud vidēre poterat'},
+        {k:'comp', q:'Name the three things the text says she could not see.', min:12,
+         model:'The ships, the sailors, and Claudia calling her.', lat:'nōn nāvēs, nōn nautās, nōn Claudiam vocantem'},
+        {k:'comp', q:'The text says she was seeing something <em>nōn hīc, nōn nunc</em>. What does that tell you?', min:18,
+         model:'She is seeing something that is not in this place and not in this moment — something remembered, from somewhere else and some other time.',
+         lat:'aliud vidēbat: nōn hīc, nōn nunc'},
+      ]},
+  ],
+  lf:[
+    {k:'label', q:'<em>nāvis ē Graeciā nūper <b>ducta</b></em> — label the participle.',
+     word:'ducta', opts:['PAP — leading','PPP — having been brought','FAP — about to lead'], correct:1,
+     note:'PPP. The ship did not lead anything — it WAS led, brought across from Greece. -ta is the ending of a thing already done to something.',
+     hint:'Did the ship do the leading, or did something happen to the ship?'},
+    {k:'spot', q:'Click the other PPP in this sentence.',
+     words:['mercēs','ē','nāve','portātae','in','terrā','manēbant'], target:3,
+     note:'portātae — having been carried off. It ends -ae because mercēs (goods) is feminine plural, so the participle matches it.',
+     hint:'Look for a word ending -tae. It has to match a plural noun nearby.'},
+    {k:'mc', q:'Why <em>portātae</em> and not <em>portātus</em>?',
+     opts:['Because the goods are feminine and plural, and a participle matches the noun it describes.','Because it happened a long time ago.','Because it comes after a preposition.'],
+     correct:0, ok:'Exactly. A participle dresses to match its noun — which is why it can be labelled like an adjective.',
+     err:'Not that. Look at mercēs: what gender and number is it? The participle copies it.'},
+    {k:'write', q:'This page has participles doing two opposite jobs: some describe people acting, some describe things acted on. Give one of each and say who did it.',
+     min:30, look:['a PAP: portantēs / legēns / vocantem — the doer is named','a PPP: ducta / portātae / scrīpta — the doer is never named'],
+     model:'portantēs describes the sailors carrying the goods — we know exactly who is acting. ducta and portātae describe the ship and the goods, and the Latin never says who brought them or carried them off. A PPP tells you something was done without telling you who did it.'},
+  ],
+  memoria:{
+    lat:`vir pōculum* ${pt('tenēns')} — sed male* ${pt('tenēns')}.<br>manus* ${pt('frācta')}.<br>puella ${pt('rīdēns')}.<br>iānua ${pt('clausa')}.`,
+    eng:'A man holding a cup — but holding it badly. A broken hand. A girl laughing. A door shut.',
+    glosses:[['pōculum*','cup (pōculum, pōculī n.)'],['male*','badly'],['manus*','hand (manus, manūs f. — 4th declension)']],
+    qs:[
+      {k:'label', q:'<em>manus* <b>frācta</b></em> — label it.',
+       word:'frācta', opts:['PAP — breaking','PPP — having been broken','FAP — about to break'], correct:1,
+       note:'PPP. The hand did not break anything; it had been broken. Something happened to it, once, before this memory.',
+       hint:'Same ending family as ducta and portātae above.'},
+      {k:'spot', q:'Click the participle that is happening right now, not already finished.',
+       words:['vir','pōculum','tenēns','manus','frācta','iānua','clausa'], target:2,
+       note:'tenēns — holding. A PAP is live: the man is holding the cup at the moment she remembers.',
+       hint:'-ns is now. -ta and -sa are already over.'},
+      {k:'write', q:'Not one of these fragments is a full sentence. Why might a memory arrive in participles instead of sentences?',
+       min:30, look:['participles give a picture without a full action','no subject, no time, no main verb'],
+       model:'A participle gives you a picture but not a statement — no main verb, no time, nobody named. That is what a fragment of memory is: you can see it, but you cannot yet say what happened or when.'},
+    ]
+  }
+},
+{
+  title:'Pars III — Domum',
+  paras:[
+    { html:`<p class="latin">
+        Claudia manum* Lūciae tenuit. ${sp('“quid vīdistī?”')} rogāvit.
+        ${sp('“nihil,”')} Lūcia inquit. ${sp('“nesciō.”')}
+        Claudia tacuit, sed timēbat. saepe Lūcia tacita stābat, nihil ${pt('vidēns')}.
+      </p>`,
+      glosses:[['manum*','hand (manus, manūs f. — 4th declension)']],
+      comp:[
+        {k:'comp', q:'What does Claudia do first?', min:8,
+         model:'She takes hold of Lucia’s hand.', lat:'Claudia manum Lūciae tenuit'},
+        {k:'comp', q:'What does Claudia ask, and what are Lucia’s two answers?', min:15,
+         model:'She asks what Lucia saw. Lucia says “nothing” and “I don’t know.”',
+         lat:'“quid vīdistī?” … “nihil,” … “nesciō.”'},
+        {k:'comp', q:'How does Claudia feel, and what does she do about it?', min:12,
+         model:'She is afraid, but she says nothing.', lat:'Claudia tacuit, sed timēbat'},
+        {k:'comp', q:'Has this happened before? Which word tells you?', min:12,
+         model:'Yes — saepe, often. Lucia has often stood silent like this, seeing nothing.',
+         lat:'saepe Lūcia tacita stābat, nihil vidēns'},
+      ]},
+    { html:`<p class="latin">
+        Claudia, domum ${pt('reditūra')}, Lūciam sēcum* dūxit. per viās tacitae ambulābant.
+        ${sp('“in domō manē,”')} Claudia inquit. Lūcia caput mōvit.
+        sed Lūcia, iterum* ${pt('ventūra')}, nāvēs memoriā tenēbat — et urnam ${pt('frāctam')}, et manum*.
+      </p>`,
+      glosses:[['sēcum*','with her'],['iterum*','again'],['memoriā teneō','to remember — literally, to hold with memory']],
+      comp:[
+        {k:'comp', q:'Where is Claudia going, and who goes with her?', min:10,
+         model:'Home, and she takes Lucia with her.', lat:'Claudia, domum reditūra, Lūciam sēcum dūxit'},
+        {k:'comp', q:'How do the two of them walk through the streets?', min:8,
+         model:'In silence — both of them saying nothing.', lat:'per viās tacitae ambulābant'},
+        {k:'comp', q:'What does Claudia tell Lucia to do, and how does Lucia reply?', min:14,
+         model:'To stay in the house. Lucia does not speak — she just nods.',
+         lat:'“in domō manē,” … Lūcia caput mōvit'},
+        {k:'comp', q:'What three things is Lucia still holding in her memory at the end?', min:14,
+         model:'The ships, the broken jar, and the hand.', lat:'nāvēs memoriā tenēbat — et urnam frāctam, et manum'},
+      ]},
+  ],
+  lf:[
+    {k:'label', q:'<em>Claudia, domum <b>reditūra</b></em> — label it.',
+     word:'reditūra', opts:['PAP — returning','PPP — having been returned','FAP — about to return'], correct:2,
+     note:'FAP. -ūr- is the future participle: about to return, going to return. Claudia has not left yet.',
+     hint:'Look for the letters -ūr- in the middle. That block always means “about to”.'},
+    {k:'fill', q:'Complete from the text: <em>Lūcia, iterum ___________, nāvēs memoriā tenēbat.</em>',
+     answer:'ventūra', hint:'Another -ūr- word. It describes Lucia, so it ends -a.',
+     note:'ventūra — about to come again. She has already decided to go back to the harbour.'},
+    {k:'mc', q:'What does <em>ventūra</em> tell you that the rest of the sentence does not?',
+     opts:['That Lucia will go back to the harbour, even though nobody says so out loud.','That Lucia has already been to the harbour many times.','That Lucia is leaving Tarraco.'],
+     correct:0, ok:'Yes. The future participle smuggles in a plan. She tells Claudia nothing, and one word gives her away.',
+     err:'Read the -ūr- again: it points forward, not backward. What has not happened yet?'},
+    {k:'write', q:'Lucia tells Claudia <em>nihil</em> — nothing. Do you believe her? Use a Latin word from the page in your answer.',
+     min:30, look:['no — ventūra shows she means to return','memoriā tenēbat — she is still holding it'],
+     model:'No. She says nihil, but ventūra says she is already planning to go back, and memoriā tenēbat says she is still holding the ships in her memory. The grammar contradicts her out loud.'},
+  ]
+},
+];
+
+/* ═══ state ═══ */
+const S = { sec:0, ans:{}, done:{}, fb:{}, pick:{}, right:0, asked:0, refl:0, reflTotal:0 };
+const SELF = k => k==='write' || k==='comp';
+const eachQ = fn => SECTIONS.forEach((s,si)=>{
+  s.paras.forEach((p,pi)=>p.comp.forEach((q,qi)=>fn(q,si,pi,qi)));
+  (s.lf||[]).forEach((q,qi)=>fn(q,si,'lf',qi));
+  if(s.memoria) s.memoria.qs.forEach((q,qi)=>fn(q,si,'m',qi));
+});
+let autoTotal=0;
+eachQ(q=>{ if(SELF(q.k)) S.reflTotal++; else autoTotal++; });
+
+function updateBar(){
+  $('score').textContent = `✓ ${S.right}/${autoTotal} checked   ·   ✎ ${S.refl}/${S.reflTotal} written`;
+  $('prog').style.width = Math.round(((S.right + S.refl)/(autoTotal+S.reflTotal))*100)+'%';
+}
+
+/* ═══ question rendering ═══ */
+function qid(si,pi,qi){ return `q_${si}_${pi}_${qi}`; }
+
+function optHTML(q,id,st){
+  const pk=S.pick[id];
+  return q.opts.map((o,i)=>{
+    let c='opt';
+    if(st!==undefined&&pk!==undefined){ if(i===pk) c+=(pk===q.correct?' ok':' no'); else if(i===q.correct&&pk!==q.correct) c+=' ok'; }
+    return `<button class="${c}" id="${id}-o${i}" onclick="checkPick('${id}',${i})" ${st?'disabled':''}>${o}</button>`;
+  }).join('');
+}
+function renderQ(q, id, n){
+  const st = S.done[id];
+  let body = '';
+  if(q.k==='fill'){
+    body = `<div class="q-row">
+      <input class="ans" id="${id}-in" placeholder="Scrībe hīc…" value="${S.ans[id]||''}" ${st?'disabled':''}
+        onkeydown="if(event.key==='Enter')checkFill('${id}')">
+      <button class="btn" id="${id}-b" onclick="checkFill('${id}')" ${st?'disabled':''}>Check</button>
+      ${q.hint?`<button class="btn ghost" onclick="showHint('${id}')">Hint</button>`:''}
+    </div>`;
+  } else if(q.k==='spot'){
+    const pk = S.pick[id];
+    body = `<div class="q-row">${q.words.map((w,i)=>{
+      let c='chip'; if(st!==undefined&&pk!==undefined){ if(i===pk) c+= (pk===q.target?' ok':' no'); else if(i===q.target&&pk!==q.target) c+=' ok'; }
+      return `<button class="${c}" id="${id}-w${i}" onclick="checkSpot('${id}',${i})" ${st?'disabled':''}>${w}</button>`;}).join('')}</div>
+      ${q.hint?`<div class="q-row" style="margin-top:8px"><button class="btn ghost" onclick="showHint('${id}')">Hint</button></div>`:''}`;
+  } else if(q.k==='label'){
+    body = optHTML(q,id,st) + (q.hint?`<button class="btn ghost" onclick="showHint('${id}')">Hint</button>`:'');
+  } else if(q.k==='mc'){
+    body = optHTML(q,id,st);
+  } else if(q.k==='comp'){
+    body = `<textarea class="ans" id="${id}-in" rows="2" placeholder="Answer in English…"
+        oninput="gateWrite('${id}',${q.min})" ${st?'disabled':''}>${S.ans[id]||''}</textarea>
+      <div class="q-row" style="margin-top:8px">
+        <button class="btn" id="${id}-b" onclick="revealComp('${id}')" ${st||(S.ans[id]||'').trim().length<q.min?'disabled':''}>Check my answer</button>
+        <span style="font-size:.72rem;color:#9a7b55" id="${id}-cnt"></span>
+      </div>`;
+  } else if(q.k==='write'){
+    body = `<textarea class="ans" id="${id}-in" rows="3" placeholder="Write your answer, then check it…"
+        oninput="gateWrite('${id}',${q.min})" ${st?'disabled':''}>${S.ans[id]||''}</textarea>
+      <div class="q-row" style="margin-top:8px">
+        <button class="btn" id="${id}-b" onclick="revealModel('${id}')" ${st||(S.ans[id]||'').trim().length<q.min?'disabled':''}>Compare with a model answer</button>
+        <span style="font-size:.72rem;color:#9a7b55" id="${id}-cnt"></span>
+      </div>`;
+  }
+  return `<div class="q ${st==='ok'?'done':st==='no'?'miss':''}" id="${id}">
+    <div class="q-num">${n}</div>
+    <div class="q-text">${q.q}</div>
+    ${body}
+    ${q.hint?`<div class="hintline" id="${id}-h">💡 ${q.hint}</div>`:''}
+    <div class="fb${S.fb[id]?' show '+S.fb[id].cls:''}" id="${id}-f">${S.fb[id]?S.fb[id].html:''}</div>
+  </div>`;
+}
+
+function findQ(id){
+  const [,si,pi,qi] = id.split('_');
+  const s = SECTIONS[+si];
+  if(pi === 'm')  return s.memoria.qs[+qi];
+  if(pi === 'lf') return s.lf[+qi];
+  return s.paras[+pi].comp[+qi];
+}
+function mark(id, ok, html, cls){
+  const box=$(id), fb=$(id+'-f');
+  const k = cls||(ok?'good':'bad');
+  box.classList.add(ok?'done':'miss');
+  fb.className='fb show '+k;
+  fb.innerHTML=html;
+  S.done[id]= ok?'ok':'no';
+  S.fb[id]={html:html, cls:k};
+  updateBar();
+}
+
+function checkFill(id){
+  const q=findQ(id), el=$(id+'-in'); if(!el||S.done[id]) return;
+  const v=el.value; if(!v.trim()) return;
+  S.ans[id]=v;
+  const ok = norm(v)===norm(q.answer) || (q.alts||[]).some(a=>norm(v)===norm(a));
+  el.disabled=true; $(id+'-b').disabled=true;
+  S.asked++; if(ok) S.right++;
+  mark(id, ok, ok ? `<b>Optimē!</b> ${q.note}`
+    : `Not the word. The text has <b><em>${q.answer}</em></b>. ${q.note}`);
+}
+function checkSpot(id, i){
+  const q=findQ(id); if(S.done[id]) return;
+  const ok = i===q.target;
+  S.pick[id]=i;
+  q.words.forEach((w,j)=>{ const b=$(`${id}-w${j}`); if(b) b.disabled=true; });
+  $(`${id}-w${i}`).classList.add(ok?'ok':'no');
+  if(!ok) $(`${id}-w${q.target}`).classList.add('ok');
+  S.asked++; if(ok) S.right++;
+  mark(id, ok, (ok?'<b>Optimē!</b> ':'<b>The word is marked green.</b> ')+q.note);
+}
+function checkPick(id, i){
+  const q=findQ(id); if(S.done[id]) return;
+  const ok = i===q.correct;
+  S.pick[id]=i;
+  q.opts.forEach((o,j)=>{ const b=$(`${id}-o${j}`); if(b) b.disabled=true; });
+  $(`${id}-o${i}`).classList.add(ok?'ok':'no');
+  if(!ok) $(`${id}-o${q.correct}`).classList.add('ok');
+  S.asked++; if(ok) S.right++;
+  mark(id, ok, ok ? `<b>Optimē!</b> ${q.ok||q.note}` : `${q.err||''} ${q.note||''}`);
+}
+function gateWrite(id, min){
+  const el=$(id+'-in'), b=$(id+'-b'), c=$(id+'-cnt');
+  S.ans[id]=el.value;
+  const n=el.value.trim().length;
+  b.disabled = n < min;
+  c.textContent = n<min ? `${n} / ${min} characters — write your own answer first` : 'ready';
+}
+function revealModel(id){
+  const q=findQ(id); if(S.done[id]) return;
+  $(id+'-in').disabled=true; $(id+'-b').disabled=true;
+  S.refl++;
+  const list=(q.look||[]).map((l,i)=>`<li><input type="checkbox" id="${id}-c${i}"> ${l}</li>`).join('');
+  mark(id, true, `<span class="mlabel">A model answer — yours does not have to match the words</span>${q.model}
+    ${list?`<div style="margin-top:9px;font-size:.78rem;font-weight:700">Tick what your answer already had:</div><ul class="checklist">${list}</ul>`:''}`, 'model');
+}
+function revealComp(id){
+  const q=findQ(id); if(S.done[id]) return;
+  $(id+'-in').disabled=true; $(id+'-b').disabled=true;
+  S.refl++;
+  mark(id, true, `<span class="mlabel">The answer</span>${q.model}
+    <div class="ev">${q.lat}</div>
+    <div style="margin-top:7px;font-size:.78rem">Did yours say the same thing? Different words are fine.</div>`, 'model');
+}
+function showHint(id){ $(id+'-h').classList.add('show'); }
+
+/* ═══ section rendering ═══ */
+function renderSection(i){
+  S.sec=i;
+  const s=SECTIONS[i];
+  const allTxt = s.paras.map(p=>p.html).join(' ') + (s.memoria?s.memoria.lat:'');
+  const parts = s.paras.map((p,pi)=>`
+    ${p.html}
+    ${p.glosses && p.glosses.length ? `<div class="glosses">${p.glosses.map(([k,v])=>`<b>${k}</b> = ${v}`).join(' &nbsp;|&nbsp; ')}</div>`:''}
+    <div class="qb-h">Comprehension — paragraph ${pi+1}</div>
+    ${p.comp.map((q,qi)=>renderQ(q, qid(i,pi,qi), (pi*4)+qi+1)).join('')}
+  `).join('');
+  const lf = (s.lf&&s.lf.length) ? `<div class="qb-h lf">Language focus — participles</div>
+    ${s.lf.map((q,qi)=>renderQ(q, qid(i,'lf',qi), 'L'+(qi+1))).join('')}` : '';
+
+  const mem = s.memoria ? `
+    <div class="memoria"><h4>✦ Memoria</h4>
+      <p>${s.memoria.lat}</p>
+      <p class="mem-eng">${s.memoria.eng}</p>
+      ${s.memoria.glosses && s.memoria.glosses.length ? `<div class="glosses" style="margin-top:10px">${s.memoria.glosses.map(([k,v])=>`<b>${k}</b> = ${v}`).join(' &nbsp;|&nbsp; ')}</div>`:''}</div>
+    <div class="qb-h lf">Memoria — the fragments</div>
+    ${s.memoria.qs.map((q,qi)=>renderQ(q, qid(i,'m',qi), 'M'+(qi+1))).join('')}` : '';
+
+  pg().innerHTML = `
+  <div class="layout">
+    <div class="vocab-col">${vocabBar(allTxt)}</div>
+    <div>
+      <div class="card">
+        <div class="scene-label">📖 ${s.title}</div>
+        ${parts}
+        ${lf}
+        ${mem}
+      </div>
+      <div class="navbar">
+        <div class="secnav">
+          <button onclick="renderHome()">⌂</button>
+          ${SECTIONS.map((x,j)=>`<button class="${j===i?'cur':''}${secDone(j)?' ok':''}" onclick="renderSection(${j})">${j+1}</button>`).join('')}
+        </div>
+        <div>
+          ${i>0?`<button class="btn ghost" onclick="renderSection(${i-1})">◀ Back</button> `:''}
+          ${i<SECTIONS.length-1?`<button class="btn" onclick="renderSection(${i+1})">Next — ${SECTIONS[i+1].title.split('—')[1].trim()} ▶</button>`
+            :`<button class="btn" onclick="renderEnd()">Fīnis ▶</button>`}
+        </div>
+      </div>
+    </div>
+  </div>`;
+  window.scrollTo(0,0);
+  updateBar();
+}
+function secDone(j){
+  const s=SECTIONS[j]; let all=true;
+  s.paras.forEach((p,pi)=>p.comp.forEach((q,qi)=>{ if(!S.done[qid(j,pi,qi)]) all=false; }));
+  (s.lf||[]).forEach((q,qi)=>{ if(!S.done[qid(j,'lf',qi)]) all=false; });
+  if(s.memoria) s.memoria.qs.forEach((q,qi)=>{ if(!S.done[qid(j,'m',qi)]) all=false; });
+  return all;
+}
+
+function renderHome(){
+  pg().innerHTML=`<div class="home">
+    <h2>Memoria Lūciae</h2>
+    <div class="sub">I — In Portū · a reader for Stage 23</div>
+    <div class="home-card">
+      <div class="how">
+        <p style="margin-top:0">Lucia lives in Tarraco, in Spain, in the house of a widow named Claudia.
+        She is safe, she is useful, and she watches ships. This is the first of ten stories.</p>
+        <p><b>Every word is Stage 1–22 vocabulary.</b> The only new thing is the <b>participle</b>.</p>
+      </div>
+    </div>
+    <div class="home-card">
+      <div class="scene-label">What a participle is</div>
+      <div class="how">
+        <p>A participle is a verb wearing an adjective's clothes. It describes somebody, and it tells you
+        <b>when</b> their action sits relative to the main verb.</p>
+        <div class="ex-sent"><em>nāvēs <b>spectāns</b></em> — watching the ships &nbsp;·&nbsp; <b>PAP</b>, happening now
+          <span class="eng">-ns  ·  -ntēs in the plural</span></div>
+        <div class="ex-sent"><em>manus <b>frācta</b></em> — a broken hand &nbsp;·&nbsp; <b>PPP</b>, already done to it
+          <span class="eng">-tus, -ta, -tum  ·  matches its noun like any adjective</span></div>
+        <div class="ex-sent"><em>domum <b>reditūra</b></em> — about to go home &nbsp;·&nbsp; <b>FAP</b>, not yet
+          <span class="eng">look for the -ūr- block in the middle</span></div>
+        <table class="vt"><tr><th>Label</th><th>Ending</th><th>When</th></tr>
+          <tr><td><b>PAP</b></td><td>-ns / -ntēs</td><td>…-ing, right now</td></tr>
+          <tr><td><b>PPP</b></td><td>-tus / -ta / -tum</td><td>having been …-ed, already</td></tr>
+          <tr><td><b>FAP</b></td><td>-ūrus / -ūra</td><td>about to …, not yet</td></tr></table>
+        <p>Every participle belongs to somebody. When you meet one, find the noun it describes and draw
+        an arrow to it in your head.</p>
+      </div>
+    </div>
+    <div class="home-card">
+      <div class="scene-label">How this reader works</div>
+      <div class="how">
+        <p>You are reading on your own, so every question checks itself. Each page has
+        <b>two paragraphs and two sets of questions.</b></p>
+        <p><b>Comprehension</b> comes first — four questions under each paragraph, answered in English,
+        the same kind you get on paper. Write your answer, then hit Check: you get the answer and the
+        Latin sentence it comes from, so you can see exactly where you should have been looking.
+        The button stays locked until you have written something. Different words are fine.</p>
+        <p><b>Language focus</b> comes after both paragraphs and works on the participles across the
+        whole page. Clicking, typing a Latin word, and choosing a label are marked the moment you answer,
+        with an explanation either way — a wrong answer tells you more than a right one, so guess
+        honestly. Most have a <b>Hint</b> that is one step short of the answer.</p>
+        <p>The bar at the top tracks both kinds. When you are done, <b>Print my work</b> gives you
+        every question, your answer, and the answer key, laid out like a worksheet.</p>
+      </div>
+      <div style="text-align:center;margin-top:18px"><button class="btn" onclick="renderSection(0)">Incipe — begin ▶</button></div>
+    </div>
+  </div>`;
+  window.scrollTo(0,0);
+  updateBar();
+}
+
+function renderEnd(){
+  const pct = autoTotal? Math.round(S.right/autoTotal*100):0;
+  pg().innerHTML=`<div class="home">
+    <h2>Fīnis — Pars I</h2>
+    <div class="sub">Lucia said nothing, and one word gave her away.</div>
+    <div class="home-card">
+      <div class="how">
+        <p style="margin-top:0"><b>Checked answers:</b> ${S.right} of ${autoTotal} right (${pct}%)<br>
+        <b>Written answers:</b> ${S.refl} of ${S.reflTotal} compared with a model</p>
+        <p>Participles to carry forward: <em>spectāns, clāmantēs, petēns, portantēs, legēns,
+        vocantem, tenēns, rīdēns, vidēns</em> (PAP) · <em>ducta, portātae, scrīpta, frācta, frāctam,
+        clausa</em> (PPP) · <em>reditūra, ventūra</em> (FAP).</p>
+        <p>Keep the Memoria in mind. Four fragments, no sentence, and one of them is the key to
+        everything that happens in Italy.</p>
+      </div>
+      <div style="text-align:center;margin-top:16px">
+        <button class="btn" onclick="doPrint()">🖨 Print my work</button>
+        <button class="btn ghost" onclick="renderSection(0)">Read again</button>
+      </div>
+    </div>
+  </div>`;
+  window.scrollTo(0,0);
+}
+
+/* ═══ print ═══ */
+function buildPrint(){
+  const strip = h => { const d=document.createElement('div'); d.innerHTML=h; return d.textContent.replace(/\s+/g,' ').trim(); };
+  let out = `<p class="pw-h">Memoria Lūciae — I · In Portū</p>
+    <p class="pw-sub">Stage 23 · Participles (PAP / PPP / FAP) · vocabulary from Stages 1–22<br>
+    Checked: ${S.right}/${autoTotal} right &nbsp;·&nbsp; Written: ${S.refl}/${S.reflTotal}</p>`;
+  SECTIONS.forEach((s,si)=>{
+    out += `<p class="pw-sec">${s.title}</p>`;
+    s.paras.forEach((p,pi)=>{
+      out += `<p class="pw-para">${strip(p.html)}</p>`;
+      out += `<p class="pw-qh">Comprehension — paragraph ${pi+1}</p>`;
+      p.comp.forEach((q,qi)=> out += printQ(q, qid(si,pi,qi), (pi*4)+qi+1) );
+    });
+    if(s.lf && s.lf.length){
+      out += `<p class="pw-qh">Language focus — participles</p>`;
+      s.lf.forEach((q,qi)=> out += printQ(q, qid(si,'lf',qi), 'L'+(qi+1)) );
+    }
+    if(s.memoria){
+      out += `<div class="pw-mem">${strip(s.memoria.lat)}<br><span style="font-style:normal;font-size:8.5pt">${s.memoria.eng}</span></div>`;
+      s.memoria.qs.forEach((q,qi)=> out += printQ(q, qid(si,'m',qi), 'M'+(qi+1)) );
+    }
+  });
+  return out;
+}
+function printQ(q,id,n){
+  const strip = h => { const d=document.createElement('div'); d.innerHTML=h; return d.textContent.trim(); };
+  let mine='', model='';
+  if(q.k==='comp'){ mine = S.ans[id]||'(not answered)'; model = q.model+'   [ '+strip(q.lat)+' ]'; }
+  else if(q.k==='write'){ mine = S.ans[id]||'(not answered)'; model = q.model; }
+  else if(q.k==='fill'){ mine = S.ans[id]||'(not answered)'; model = q.answer+' — '+strip(q.note); }
+  else if(q.k==='spot'){ mine = S.done[id]==='ok'?'correct':S.done[id]==='no'?'incorrect':'(not answered)'; model = q.words[q.target]+' — '+strip(q.note); }
+  else { mine = S.done[id]==='ok'?'correct':S.done[id]==='no'?'incorrect':'(not answered)'; model = strip(q.opts[q.correct]); }
+  return `<div class="pw-q"><div class="pw-qt">${n?n+'. ':''}${strip(q.q)}</div>
+    <div class="pw-mine">${mine}</div>
+    <div class="pw-model">${model}</div></div>`;
+}
+function doPrint(){ $('print-body').innerHTML = buildPrint(); window.print(); }
+
+renderHome();
+</script>
+</body></html>
