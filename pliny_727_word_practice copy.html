@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pliny 7.27 — Word Role Practice</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Georgia,serif;font-size:16px;background:#f5f0e8;color:#1a1108;min-height:100vh;}
+#topbar{position:sticky;top:0;z-index:100;background:#1a2c1a;color:#f5f0e8;display:flex;align-items:center;gap:12px;padding:0 20px;height:50px;}
+#topbar h1{font-size:.93rem;font-weight:700;flex:1;}
+#score-d{font-size:.8rem;opacity:.85;}
+.tb{background:#4a7c3f;border:none;color:#fff;border-radius:5px;padding:6px 16px;font-size:.84rem;cursor:pointer;font-family:inherit;}
+.tb:hover{background:#365c2e;}.tb.s{background:transparent;border:1px solid #a0c890;}.tb.s:hover{background:#243c20;}
+#page{max-width:860px;margin:0 auto;padding:20px 16px 50px;}
+.card{background:#fff;border:1.5px solid #a0c890;border-radius:10px;margin-bottom:16px;overflow:hidden;}
+.ch{padding:8px 14px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;}
+.ch.n{background:#ddeeff;color:#00407a;}
+.ch.v{background:#d8f0dd;color:#1a5c28;}
+.ch.p{background:#fff8d6;color:#7a5c00;}
+.ch.a{background:#fde8d0;color:#7d3000;}
+.lbl{font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:10px;}
+.lbl.n{background:#cce5ff;color:#004085;}
+.lbl.v{background:#c3e6cb;color:#155724;}
+.lbl.p{background:#fff3cd;color:#856404;}
+.lbl.a{background:#fde8d0;color:#7d3000;}
+.cs{padding:11px 14px 8px;font-size:.97rem;line-height:1.85;font-style:italic;border-bottom:1px solid #e0eed8;}
+.cs .tgt{background:#fff3cd;border-bottom:2.5px solid #c9920a;border-radius:2px;padding:0 2px;font-style:normal;font-weight:700;}
+.cq{padding:9px 14px 3px;font-size:.87rem;color:#1a2c1a;font-weight:700;line-height:1.4;}
+.mc{padding:4px 14px 12px;display:flex;flex-direction:column;gap:5px;}
+.mb{background:#f5f8f0;border:1px solid #a0c890;border-radius:5px;padding:7px 10px;font-size:.84rem;text-align:left;cursor:pointer;font-family:inherit;line-height:1.35;transition:background .1s;}
+.mb:hover:not(:disabled){background:#e0ecd0;}.mb:disabled{cursor:default;opacity:.8;}
+.mb.ok{background:#d4edda;border-color:#28a745;font-weight:700;}.mb.err{background:#f8d7da;border-color:#dc3545;}
+.fb{display:none;margin:0 14px 12px;padding:9px 12px;border-radius:6px;font-size:.83rem;line-height:1.55;}
+.fb.show{display:block;}.fb.ok{background:#d4edda;color:#155724;border:1px solid #c3e6cb;}
+.fb.err{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
+#ref{max-width:860px;margin:0 auto;padding:0 16px 60px;}
+.rt{background:#fff;border:1.5px solid #a0c890;border-radius:10px;border-collapse:collapse;width:100%;font-size:.83rem;}
+.rt th{background:#e8f0e0;border:1px solid #a0c890;padding:6px 10px;text-align:left;font-size:.73rem;text-transform:uppercase;letter-spacing:.04em;color:#2c4a1a;}
+.rt td{border:1px solid #d8e8c8;padding:6px 10px;vertical-align:top;}
+.tog{background:none;border:2px solid #a0c890;border-radius:6px;padding:7px 16px;font-size:.84rem;cursor:pointer;font-family:inherit;color:#2c4a1a;margin-bottom:14px;}
+.tog:hover{background:#e8f0e0;}#ref-body{display:none;}#ref-body.open{display:block;}
+.src{background:#e8f0e0;border:1.5px solid #a0c890;border-radius:8px;padding:12px 16px;font-size:.84rem;line-height:1.8;font-style:italic;margin-bottom:20px;color:#1a2c1a;}
+.src strong{font-style:normal;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#4a7c3f;display:block;margin-bottom:6px;}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <h1>Pliny 7.27 §12–14 — Word Role Practice</h1>
+  <span id="score-d"></span>
+  <button class="tb" onclick="newSet()">↺ New 5</button>
+  <button class="tb s" onclick="document.getElementById('ref').scrollIntoView({behavior:'smooth'})">Labels ↓</button>
+</div>
+<div id="page">
+<div class="src">
+  <strong>Source text — Pliny Ep. 7.27.12–14</strong>
+  Et haec quidem affirmantibus credo; illud affirmare aliis possum. Est libertus mihi non illitteratus. Cum hoc minor frater eodem lecto quiescebat. Is visus est sibi cernere quendam in toro residentem, admoventemque capiti suo cultros, atque etiam ex ipso vertice amputantem capillos. Ubi illuxit, ipse circa verticem tonsus, capilli iacentes reperiuntur.
+  <br><br>
+  Exiguum temporis medium, et rursus simile aliud priori fidem fecit. Puer in paedagogio mixtus pluribus dormiebat. Venerunt per fenestras — ita narrat — in tunicis albis duo cubantemque detonderunt et qua venerant recesserunt. Hunc quoque tonsum sparsosque circa capillos dies ostendit.
+  <br><br>
+  Nihil notabile secutum, nisi forte quod non fui reus, futurus, si Domitianus sub quo haec acciderunt diutius vixisset. Nam in scrinio eius datus a Caro de me libellus inventus est; ex quo coniectari potest, quia reis moris est summittere capillum, recisos meorum capillos depulsi quod imminebat periculi signum fuisse.
+</div>
+</div>
+<div id="ref">
+  <button class="tog" onclick="toggleRef()">▶ Show label chart</button>
+  <div id="ref-body"></div>
+</div>
+<script>
+const DB=[
+  {qt:'n',
+   s:'Et <T>haec</T> quidem affirmantibus credo;',
+   t:'haec',
+   q:'What is the grammatical role of <em>haec</em>?',
+   opts:['DO — accusative, direct object','S — nominative, subject','PP — object of a preposition','G — genitive'],
+   co:0,
+   note:'<em>haec</em> (acc. n. pl. of <em>hic, haec, hoc</em>) is the <strong>direct object</strong> of <em>credo</em>: "I believe these things." Note that for neuter nouns the nominative and accusative look identical; context (word order, verb meaning) confirms this is accusative DO.'},
+
+  {qt:'p',
+   s:'Et haec quidem <T>affirmantibus</T> credo;',
+   t:'affirmantibus',
+   q:'<em>affirmantibus</em> is a PAP used as a noun. What is its grammatical role?',
+   opts:['IO — dative, indirect object','S — nominative, subject','DO — accusative, direct object','PP — after a preposition'],
+   co:0,
+   note:'<em>affirmantibus</em> is a present active participle of <em>affirmo</em> in the dative plural, used substantively (as a noun): "those affirming." <em>credo</em> + dative = "to believe someone" — making <em>affirmantibus</em> the <strong>IO</strong>. PAPs used as nouns still take the role of whatever case they are in.'},
+
+  {qt:'v',
+   s:'illud <T>affirmare</T> aliis possum.',
+   t:'affirmare',
+   q:'What is the grammatical role of <em>affirmare</em>?',
+   opts:['inf — complementary infinitive','V — finite main verb','inf-V — inside an indirect statement','gerund — verbal noun'],
+   co:0,
+   note:'<em>affirmare</em> is an <strong>infinitive</strong> completing <em>possum</em>: "I am able <em>to affirm</em> this to others." The infinitive after a verb of ability, permission, or desire is called a complementary infinitive (it completes the verb\'s meaning). It is not inside an AcI, so label it <strong>inf</strong>, not inf-V.'},
+
+  {qt:'n',
+   s:'<T>illud</T> affirmare aliis possum.',
+   t:'illud',
+   q:'What is the grammatical role of <em>illud</em>?',
+   opts:['DO — accusative, direct object','S — nominative, subject','G — genitive','IO — dative, indirect object'],
+   co:0,
+   note:'<em>illud</em> (acc. n. sg. of <em>ille, illa, illud</em>) is the <strong>direct object</strong> of the infinitive <em>affirmare</em>: "this [thing] I am able to affirm to others." It looks ahead to the ghost story Pliny is about to tell.'},
+
+  {qt:'n',
+   s:'illud affirmare <T>aliis</T> possum.',
+   t:'aliis',
+   q:'What is the grammatical role of <em>aliis</em>?',
+   opts:['IO — dative, indirect object','S — nominative, subject','abl — ablative of means','G — genitive'],
+   co:0,
+   note:'<em>aliis</em> is dative plural, functioning as the <strong>indirect object</strong> of <em>affirmare</em>: "I can affirm this <em>to others</em>." Many verbs (including affirmo in this sense) take a dative recipient.'},
+
+  {qt:'n',
+   s:'Est <T>libertus</T> mihi non illitteratus.',
+   t:'libertus',
+   q:'What is the grammatical role of <em>libertus</em>?',
+   opts:['S — nominative, subject','DO — accusative, direct object','G — genitive','IO — dative, indirect object'],
+   co:0,
+   note:'<em>libertus</em> is nominative, functioning as the <strong>subject</strong> of <em>est</em>. The sentence is a form of "there is to me a freedman" — an impersonal "there is" construction with a dative of possession (<em>mihi</em>).'},
+
+  {qt:'n',
+   s:'Est libertus <T>mihi</T> non illitteratus.',
+   t:'mihi',
+   q:'What is the grammatical role of <em>mihi</em>?',
+   opts:['IO — dative of possession','S — nominative, subject','G — genitive, possessive','abl — ablative of separation'],
+   co:0,
+   note:'<em>mihi</em> is a <strong>dative of possession</strong>: <em>est</em> + dative = "there is to X" = "X has." "Est libertus mihi" = "There is to me a freedman" = "I have a freedman." This is standard Latin for possession.'},
+
+  {qt:'a',
+   s:'Est libertus mihi <T>non illitteratus</T>.',
+   t:'non illitteratus',
+   q:'"non illitteratus" describes libertus. What label does it share with libertus?',
+   opts:['S — describes the subject','DO — describes a direct object','PP — describes a PP noun','G — describes a genitive noun'],
+   co:0,
+   note:'<em>libertus</em> is the nominative <strong>subject</strong> of <em>est</em>, and <em>non illitteratus</em> ("not unlittered" = literate) is a predicate adjective describing it. Adjectives share the label of the noun they modify — here <strong>S</strong>.'},
+
+  {qt:'n',
+   s:'Cum hoc minor frater eodem <T>lecto</T> quiescebat.',
+   t:'lecto',
+   q:'What is the grammatical role of <em>lecto</em>?',
+   opts:['abl — ablative of place, no preposition','PP — preposition + ablative','DO — direct object','G — genitive'],
+   co:0,
+   note:'<em>lecto</em> is a bare ablative (no preposition) expressing <strong>place where</strong>: "in/on the same bed." Classical Latin sometimes omits <em>in</em> with common nouns of this type. This is an ablative of place — label it <strong>abl</strong>, not PP, because there is no preposition.'},
+
+  {qt:'a',
+   s:'Cum hoc <T>minor</T> frater eodem lecto quiescebat.',
+   t:'minor',
+   q:'"minor" is an adjective describing frater. What label does it share?',
+   opts:['S — describes the subject','DO — describes a direct object','PP — describes a PP noun','abl — describes an ablative noun'],
+   co:0,
+   note:'<em>frater</em> is the nominative <strong>subject</strong> of <em>quiescebat</em>. <em>minor</em> (comparative adjective: younger) describes <em>frater</em> and shares its label: <strong>S</strong>.'},
+
+  {qt:'v',
+   s:'Is <T>visus est</T> sibi cernere quendam in toro residentem.',
+   t:'visus est',
+   q:'What is the grammatical role of <em>visus est</em>?',
+   opts:['LV — linking verb (videor = to seem)','V — transitive action verb','VoH — introduces an indirect statement','inf-V — inside an indirect statement'],
+   co:0,
+   note:'<em>videor</em> (passive of <em>video</em>) means "to seem" and acts as a <strong>linking verb</strong>: it connects the subject (<em>Is</em>) to what he seemed to do (<em>cernere</em>). Compare English "he seemed to see." Like other linking verbs, it takes an infinitive complement rather than a direct object.'},
+
+  {qt:'v',
+   s:'Is visus est sibi <T>cernere</T> quendam in toro residentem.',
+   t:'cernere',
+   q:'What is the grammatical role of <em>cernere</em>?',
+   opts:['inf — complementary infinitive','V — finite verb','inf-V — inside an AcI','gerund — verbal noun'],
+   co:0,
+   note:'<em>cernere</em> is an <strong>infinitive</strong> completing <em>visus est</em> (seemed): "he seemed to see." This is a complementary infinitive — not an AcI, because there is no separate accusative subject for cernere; the subject of cernere is the same as the subject of visus est (Is).'},
+
+  {qt:'n',
+   s:'Is visus est sibi cernere <T>quendam</T> in toro residentem.',
+   t:'quendam',
+   q:'What is the grammatical role of <em>quendam</em>?',
+   opts:['DO — accusative, direct object','S — nominative, subject','PP — object of in','IO — dative, indirect object'],
+   co:0,
+   note:'<em>quendam</em> is accusative of the indefinite pronoun <em>quidam, quaedam, quoddam</em> — "a certain man." It is the <strong>direct object</strong> of <em>cernere</em>: he seemed "to see <em>someone</em> sitting on the couch." What follows (residentem, admoventemque, amputantem) are all PAPs describing quendam.'},
+
+  {qt:'n',
+   s:'...cernere quendam in <T>toro</T> residentem.',
+   t:'toro',
+   q:'What is the grammatical role of <em>toro</em>?',
+   opts:['PP — preposition + ablative','abl — bare ablative, no preposition','DO — direct object','G — genitive'],
+   co:0,
+   note:'<em>toro</em> is ablative after the preposition <em>in</em>: <em>in toro</em> = "on/in the couch." Preposition + ablative = <strong>PP</strong>. This is locative: "sitting <em>on</em> the couch."'},
+
+  {qt:'p',
+   s:'...cernere quendam in toro <T>residentem</T>, admoventemque capiti suo cultros.',
+   t:'residentem',
+   q:'<em>residentem</em> is a PAP. What word does it describe?',
+   opts:['quendam — acc. m. sg.','toro — abl. m. sg.','capiti — dat. n. sg.','cultros — acc. m. pl.'],
+   co:0,
+   note:'<em>residentem</em> (PAP of <em>resideo</em>, acc. m. sg.) agrees with <em>quendam</em> (acc. m. sg.): "someone <em>sitting/remaining</em> on the couch." What follows — <em>admoventemque</em> and <em>amputantem</em> — are more PAPs in the same accusative chain, all describing the same <em>quendam</em>.'},
+
+  {qt:'n',
+   s:'...admoventemque <T>capiti</T> suo cultros.',
+   t:'capiti',
+   q:'What is the grammatical role of <em>capiti</em>?',
+   opts:['IO — dative, indirect object','S — nominative, subject','PP — after a preposition','DO — accusative, direct object'],
+   co:0,
+   note:'<em>admoveo</em> takes two objects: an accusative of the thing moved (the knives → <em>cultros</em>) and a dative of the destination (toward → <em>capiti</em>). <em>capiti</em> is dative, functioning as the <strong>IO</strong>: "moving [the knives] <em>to his head</em>."'},
+
+  {qt:'n',
+   s:'...admoventemque capiti suo <T>cultros</T>.',
+   t:'cultros',
+   q:'What is the grammatical role of <em>cultros</em>?',
+   opts:['DO — accusative, direct object','IO — dative, indirect object','PP — after a preposition','G — genitive'],
+   co:0,
+   note:'<em>cultros</em> (acc. m. pl. of <em>culter</em>, knife) is the <strong>direct object</strong> of <em>admoventem</em>: "moving <em>the knives</em> to his head." Here admoveo takes both a dative (<em>capiti</em>) and an accusative (<em>cultros</em>), like English "move X to Y."'},
+
+  {qt:'p',
+   s:'...atque etiam ex ipso vertice <T>amputantem</T> capillos.',
+   t:'amputantem',
+   q:'<em>amputantem</em> is a PAP. What word does it describe?',
+   opts:['quendam — acc. m. sg.','vertice — abl. m. sg.','capillos — acc. m. pl.','Is — nom. m. sg.'],
+   co:0,
+   note:'<em>amputantem</em> (PAP of <em>amputo</em>, acc. m. sg.) is the third participle in the chain, still describing <em>quendam</em> (acc. m. sg.) — the mysterious figure on the couch. The chain: <em>residentem</em> (sitting) … <em>admoventemque</em> (moving) … <em>amputantem</em> (cutting off).'},
+
+  {qt:'p',
+   s:'Ubi illuxit, ipse circa verticem <T>tonsus</T>, capilli iacentes reperiuntur.',
+   t:'tonsus',
+   q:'<em>tonsus</em> is a PPP. What word does it describe?',
+   opts:['ipse — nom. m. sg.','verticem — acc. m. sg.','capilli — nom. m. pl.','illuxit — verb, not a noun'],
+   co:0,
+   note:'<em>tonsus</em> (PPP of <em>tondeo</em>, nom. m. sg.) agrees with <em>ipse</em> (nom. m. sg.): "he himself, <em>shorn</em> around the crown, was found." The PPP here functions predicatively, describing the state in which the subject is found.'},
+
+  {qt:'p',
+   s:'...capilli <T>iacentes</T> reperiuntur.',
+   t:'iacentes',
+   q:'<em>iacentes</em> is a PAP. What word does it describe?',
+   opts:['capilli — nom. m. pl.','ipse — nom. m. sg.','verticem — acc. m. sg.','reperiuntur — verb, not a noun'],
+   co:0,
+   note:'<em>iacentes</em> (PAP of <em>iaceo</em>, nom. m. pl.) agrees with <em>capilli</em> (nom. m. pl.): "the hairs, <em>lying</em> [there], are found." The PAP adds a circumstantial detail — the hairs were found scattered on the ground.'},
+
+  {qt:'n',
+   s:'Exiguum <T>temporis</T> medium.',
+   t:'temporis',
+   q:'What is the grammatical role of <em>temporis</em>?',
+   opts:['G — partitive genitive','S — nominative, subject','PP — after a preposition','DO — direct object'],
+   co:0,
+   note:'<em>temporis</em> is a <strong>partitive genitive</strong> (genitive of the whole): "a small [part] of time" = "a short interval of time." The genitive here indicates the material from which the amount is measured. Compare English "a little <em>of</em> time."'},
+
+  {qt:'p',
+   s:'Puer in paedagogio <T>mixtus</T> pluribus dormiebat.',
+   t:'mixtus',
+   q:'<em>mixtus</em> is a PPP. What word does it describe?',
+   opts:['Puer — nom. m. sg.','paedagogio — abl. n. sg.','pluribus — abl. pl.','dormiebat — verb, not a noun'],
+   co:0,
+   note:'<em>mixtus</em> (PPP of <em>misceo</em>, nom. m. sg.) agrees with <em>Puer</em> (nom. m. sg.): "the boy, <em>mixed/lodging</em> among many." The verb <em>misceo</em> can describe being thrown together or quartered among others — here the slave boy slept in a room with several others.'},
+
+  {qt:'p',
+   s:'...nisi forte quod non fui reus, <T>futurus</T>, si Domitianus... diutius vixisset.',
+   t:'futurus',
+   q:'<em>futurus</em> is a FAP. What does it describe?',
+   opts:['[ego] — implied subject, nom. m. sg.','reus — nom. m. sg.','Domitianus — nom. m. sg.','quod — neuter pronoun'],
+   co:0,
+   note:'<em>futurus</em> (FAP of <em>sum</em>, nom. m. sg.) describes the implied subject — Pliny himself (ego): "I was not a defendant, [though I was] <em>about to be</em>." The FAP signals a future action from the perspective of the main clause\'s past time. <em>futurus</em> = future participle of esse.'},
+
+  {qt:'p',
+   s:'...datus a Caro de me libellus <T>inventus</T> est;',
+   t:'inventus',
+   q:'<em>inventus</em> is a PPP. What word does it describe?',
+   opts:['libellus — nom. m. sg.','Caro — abl. m. sg.','scrinio — abl. n. sg.','datus — another PPP, not a noun'],
+   co:0,
+   note:'<em>inventus</em> (PPP of <em>invenio</em>, nom. m. sg.) together with <em>est</em> forms the perfect passive: "was found." It agrees with <em>libellus</em> (nom. m. sg.) — the subject of the passive verb. Note that <em>datus</em> is also a PPP describing <em>libellus</em>: "a booklet <em>given</em> by Carus… was <em>found</em>."'},
+
+  {qt:'n',
+   s:'...datus <T>a Caro</T> de me libellus inventus est;',
+   t:'a Caro',
+   q:'What is the role of <em>Caro</em> in <em>a Caro</em>?',
+   opts:['PP — ablative of agent','PP — ablative of separation','S — nominative, subject','IO — dative, indirect object'],
+   co:0,
+   note:'<em>ā/ab</em> + ablative of a <em>person</em> = <strong>ablative of agent</strong>: "given <em>by Carus</em>." This is the standard way to express the personal agent of a passive verb. Contrast the instrumental ablative (no preposition, no personal agent): "varied <em>by/with</em> colors."'},
+
+  {qt:'v',
+   s:'ex quo <T>coniectari</T> potest...',
+   t:'coniectari',
+   q:'What is the grammatical role of <em>coniectari</em>?',
+   opts:['inf — passive complementary infinitive','V — finite main verb','gerund — verbal noun','inf-V — inside an indirect statement'],
+   co:0,
+   note:'<em>coniectari</em> is the passive present infinitive of <em>conicio</em>, functioning as a <strong>complementary infinitive</strong> with <em>potest</em>: "it <em>can be conjectured</em>." The impersonal passive construction (no stated subject) + potest is a common Latin idiom.'},
+
+  {qt:'v',
+   s:'...quia reis moris est <T>summittere</T> capillum...',
+   t:'summittere',
+   q:'What is the grammatical role of <em>summittere</em>?',
+   opts:['inf — subject of impersonal moris est','inf-V — inside an AcI','gerund — verbal noun','V — finite main verb'],
+   co:0,
+   note:'<em>moris est</em> + infinitive is an impersonal construction: "it is the custom to [do X]." The infinitive <em>summittere</em> is the grammatical <strong>subject</strong> of this impersonal expression. Compare: <em>necesse est ire</em> = "it is necessary to go."'},
+
+  {qt:'n',
+   s:'...reis moris est summittere <T>capillum</T>...',
+   t:'capillum',
+   q:'What is the grammatical role of <em>capillum</em>?',
+   opts:['DO — accusative, direct object','S — nominative, subject','G — genitive','PP — after a preposition'],
+   co:0,
+   note:'<em>capillum</em> is accusative, functioning as the <strong>direct object</strong> of the infinitive <em>summittere</em>: "to let <em>the hair</em> grow." <em>summitto</em> means "to let down/grow" — defendants traditionally let their hair and beard grow as a sign of mourning.'},
+
+  {qt:'p',
+   s:'...<T>recisos</T> meorum capillos... periculi signum fuisse.',
+   t:'recisos',
+   q:'<em>recisos</em> is a PPP. What word does it describe?',
+   opts:['capillos — acc. m. pl.','meorum — gen. pl.','signum — acc. n. sg.','periculi — gen. n. sg.'],
+   co:0,
+   note:'<em>recisos</em> (PPP of <em>recido</em> = to cut off, acc. m. pl.) agrees with <em>capillos</em> (acc. m. pl.): "the <em>cut-off</em> hairs of mine." This is part of an AcI: "it can be conjectured that the cut hairs were a sign of the warded-off danger." <em>meorum</em> is a genitive of possession.'},
+];
+
+let drawn=[], answered={}, sC=0, sT=0;
+
+function newSet(){
+  const idx=[...Array(DB.length).keys()];
+  for(let i=idx.length-1;i>0;i--){const j=0|Math.random()*(i+1);[idx[i],idx[j]]=[idx[j],idx[i]];}
+  drawn=idx.slice(0,5); answered={};
+  renderCards(); window.scrollTo(0,0);
+}
+
+function updS(){const d=document.getElementById('score-d');if(d)d.textContent=sT>0?`${sC}/${sT}`:''}
+
+function renderCards(){
+  const page=document.getElementById('page');
+  const src=page.querySelector('.src').outerHTML;
+  page.innerHTML=src+drawn.map((di,k)=>{
+    const it=DB[di];
+    const uid=`q${di}`;
+    const sentH=it.s.replace('<T>','<span class="tgt">').replace('</T>','</span>');
+    const sh=shuffleOpts(it.opts,it.co);
+    const tag={n:'<span class="lbl n">noun</span>',v:'<span class="lbl v">verb</span>',p:'<span class="lbl p">participle</span>',a:'<span class="lbl a">adjective</span>'}[it.qt];
+    return `<div class="card">
+      <div class="ch ${it.qt}"><span>Q${k+1} — <em>${it.t}</em></span>${tag}</div>
+      <div class="cs">${sentH}</div>
+      <div class="cq">${it.q}</div>
+      <div class="mc">${sh.opts.map((o,oi)=>`<button class="mb" id="${uid}-b${oi}" onclick="ans(${di},'${uid}',${oi},${sh.co})">${o}</button>`).join('')}</div>
+      <div class="fb" id="${uid}-fb"></div>
+    </div>`;
+  }).join('');
+}
+
+function shuffleOpts(opts,co){
+  const correct=opts[co];
+  const arr=[...opts];
+  for(let i=arr.length-1;i>0;i--){const j=0|Math.random()*(i+1);[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return {opts:arr,co:arr.indexOf(correct)};
+}
+
+function ans(di,uid,chosen,correct){
+  if(answered[uid])return;
+  answered[uid]=true; sT++;
+  const ok=(chosen===correct);if(ok)sC++;updS();
+  document.querySelectorAll(`[id^="${uid}-b"]`).forEach(b=>b.disabled=true);
+  document.getElementById(`${uid}-b${chosen}`).classList.add(ok?'ok':'err');
+  if(!ok)document.getElementById(`${uid}-b${correct}`).classList.add('ok');
+  const fb=document.getElementById(`${uid}-fb`);
+  fb.innerHTML=(ok?'✓ ':'✗ ')+DB[di].note;
+  fb.className=`fb show ${ok?'ok':'err'}`;
+}
+
+const LABEL_REF=[
+  {cat:'Noun roles',rows:[
+    ['S','Nominative subject of a finite verb','libertus, puer, capilli'],
+    ['G','Genitive — of X','temporis, meorum, eius'],
+    ['IO','Dative indirect object (or dative of possession)','mihi (est libertus mihi), capiti, aliis'],
+    ['DO','Accusative direct object','illud, quendam, cultros, capillum'],
+    ['PP','Preposition + its case','in toro, a Caro, per fenestras'],
+    ['abl','Bare ablative without preposition: place, means, separation','lecto (eodem lecto)'],
+  ]},
+  {cat:'Verb / action roles',rows:[
+    ['V','Finite action verb','quiescebat, dormiebat, reperiuntur'],
+    ['LV','Linking verb — esse forms, or videor ("seem")','visus est (= seemed), est'],
+    ['VoH','Verb of headword — governs an indirect statement','(none in this extract: see §2 of the letter)'],
+    ['inf','Complementary infinitive (not inside AcI)','affirmare (possum), cernere (visus est), coniectari (potest), summittere (moris est)'],
+    ['inf-V','Infinitive verb inside an AcI after VoH','fuisse (after coniectari)'],
+    ['gerund','Verbal noun','(none in this extract)'],
+    ['gerundive','Verbal adjective of obligation','(none in this extract)'],
+  ]},
+  {cat:'Participle questions',rows:[
+    ['PPP','Perfect Passive Participle — what noun does it describe?','tonsus (→ipse), inventus (→libellus), mixtus (→Puer), recisos (→capillos)'],
+    ['PAP','Present Active Participle — what noun does it describe?','affirmantibus (→used as noun), residentem (→quendam), iacentes (→capilli)'],
+    ['FAP','Future Active Participle — what noun does it describe?','futurus (→implied ego)'],
+  ]},
+  {cat:'Adjective questions',rows:[
+    ['shares S','Adjective modifying the subject','minor (→frater, S); non illitteratus (→libertus, S)'],
+    ['shares DO','Adjective modifying a direct object','(check each sentence)'],
+    ['shares PP','Adjective modifying a PP noun','(check each sentence)'],
+  ]},
+];
+
+function toggleRef(){
+  const body=document.getElementById('ref-body');
+  const btn=document.querySelector('.tog');
+  const open=body.classList.toggle('open');
+  btn.textContent=(open?'▼ ':'▶ ')+'Show label chart';
+  if(open&&!body.innerHTML.trim())buildRef();
+}
+function buildRef(){
+  document.getElementById('ref-body').innerHTML=LABEL_REF.map(sec=>`
+    <p style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#2c4a1a;margin:14px 0 5px;">${sec.cat}</p>
+    <table class="rt"><tr><th style="width:110px;">Label</th><th>Meaning</th><th>Example from text</th></tr>
+    ${sec.rows.map(([l,m,e])=>`<tr><td style="font-weight:700;font-family:monospace;color:#1a2c1a;">${l}</td><td>${m}</td><td style="color:#555;font-style:italic;">${e}</td></tr>`).join('')}
+    </table>`).join('')+
+    `<p style="font-size:.76rem;color:#888;margin-top:10px;">Database: ${DB.length} items from §12–14 · 5 drawn per set.</p>`;
+}
+
+newSet();
+</script>
+</body>
+</html>
