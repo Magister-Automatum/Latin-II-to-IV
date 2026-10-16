@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lucia — Word Role Practice</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Georgia,serif;font-size:16px;background:#f5f0e8;color:#1a1108;min-height:100vh;}
+#topbar{position:sticky;top:0;z-index:100;background:#2c1a0e;color:#f5f0e8;display:flex;align-items:center;gap:12px;padding:0 20px;height:50px;}
+#topbar h1{font-size:.95rem;font-weight:700;flex:1;}
+#score-d{font-size:.8rem;opacity:.85;}
+.tb{background:#b87333;border:none;color:#fff;border-radius:5px;padding:6px 16px;font-size:.84rem;cursor:pointer;font-family:inherit;}
+.tb:hover{background:#a06020;}.tb.s{background:transparent;border:1px solid #c8a97e;}.tb.s:hover{background:#3d2510;}
+#page{max-width:860px;margin:0 auto;padding:20px 16px 50px;}
+/* cards */
+.card{background:#fff;border:1.5px solid #c8a97e;border-radius:10px;margin-bottom:16px;overflow:hidden;}
+.ch{padding:8px 14px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;}
+.ch.n{background:#ddeeff;color:#00407a;}
+.ch.v{background:#d8f0dd;color:#1a5c28;}
+.ch.p{background:#fff8d6;color:#7a5c00;}
+.ch.a{background:#fde8d0;color:#7d3000;}
+.lbl{font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:10px;}
+.lbl.n{background:#cce5ff;color:#004085;}
+.lbl.v{background:#c3e6cb;color:#155724;}
+.lbl.p{background:#fff3cd;color:#856404;}
+.lbl.a{background:#fde8d0;color:#7d3000;}
+.cs{padding:11px 14px 8px;font-size:.97rem;line-height:1.85;font-style:italic;border-bottom:1px solid #ebe3d5;}
+.cs .tgt{background:#fff3cd;border-bottom:2.5px solid #c9920a;border-radius:2px;padding:0 2px;font-style:normal;font-weight:700;}
+.cq{padding:9px 14px 3px;font-size:.87rem;color:#3a2000;font-weight:700;line-height:1.4;}
+.mc{padding:4px 14px 12px;display:flex;flex-direction:column;gap:5px;}
+.mb{background:#f8f3ec;border:1px solid #c8a97e;border-radius:5px;padding:7px 10px;font-size:.84rem;text-align:left;cursor:pointer;font-family:inherit;line-height:1.35;transition:background .1s;}
+.mb:hover:not(:disabled){background:#f0e0c0;}.mb:disabled{cursor:default;opacity:.8;}
+.mb.ok{background:#d4edda;border-color:#28a745;font-weight:700;}.mb.err{background:#f8d7da;border-color:#dc3545;}
+.fb{display:none;margin:0 14px 12px;padding:9px 12px;border-radius:6px;font-size:.83rem;line-height:1.55;}
+.fb.show{display:block;}.fb.ok{background:#d4edda;color:#155724;border:1px solid #c3e6cb;}
+.fb.err{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
+/* reference / chart */
+#ref{max-width:860px;margin:0 auto;padding:0 16px 60px;}
+.rt{background:#fff;border:1.5px solid #c8a97e;border-radius:10px;border-collapse:collapse;width:100%;font-size:.83rem;}
+.rt th{background:#f0e8d8;border:1px solid #c8a97e;padding:6px 10px;text-align:left;font-size:.73rem;text-transform:uppercase;letter-spacing:.04em;color:#5a4000;}
+.rt td{border:1px solid #ebe3d5;padding:6px 10px;vertical-align:top;}
+.tog{background:none;border:2px solid #c8a97e;border-radius:6px;padding:7px 16px;font-size:.84rem;cursor:pointer;font-family:inherit;color:#5a4000;margin-bottom:14px;}
+.tog:hover{background:#f0e8d8;}#ref-body{display:none;}#ref-body.open{display:block;}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <h1>Lucia — Word Role Practice</h1>
+  <span id="score-d"></span>
+  <button class="tb" onclick="newSet()">↺ New 5</button>
+  <button class="tb s" onclick="document.getElementById('ref').scrollIntoView({behavior:'smooth'})">Labels ↓</button>
+</div>
+<div id="page"></div>
+<div id="ref">
+  <button class="tog" onclick="toggleRef()">▶ Show label chart</button>
+  <div id="ref-body"></div>
+</div>
+<script>
+// qtype: n=noun role, v=verb role, p=participle-describes, a=adjective shares label
+// co = correct option index (0-based, before shuffle)
+const DB=[
+  {qt:'n',
+   s:'<T>Epistulā</T> ab Italiā receptā, multo morando Lucia tandem in nave ad Italiam stetit.',
+   t:'Epistulā',
+   q:'What is the grammatical role of <em>Epistulā</em>?',
+   opts:['abl — part of an Ablative Absolute','S — nominative, subject','PP — preposition + ablative','DO — accusative, direct object'],
+   co:0,
+   note:'<em>Epistulā</em> is in the ablative, paired with the PPP <em>receptā</em> (also ablative) to form an <strong>Ablative Absolute</strong>. Both members of an AA are in the ablative; here neither is the subject of the main clause — the whole phrase gives circumstance ("the letter having been received").'},
+
+  {qt:'p',
+   s:'Epistulā ab Italiā <T>receptā</T>, multo morando Lucia tandem in nave ad Italiam stetit.',
+   t:'receptā',
+   q:'<em>receptā</em> is a PPP. What word does it describe?',
+   opts:['Epistulā — abl. f. sg.','Lucia — nom. f. sg.','Italiam — acc. f. sg.','nave — abl. f. sg.'],
+   co:0,
+   note:'A PPP must agree in case, number, and gender with its noun. <em>receptā</em> is feminine, ablative, singular — matching <em>Epistulā</em> exactly. <em>Lucia</em> is nominative, <em>Italiam</em> accusative, <em>nave</em> is ablative but the case alone doesn\'t confirm the match — gender and number must align too.'},
+
+  {qt:'v',
+   s:'Epistulā ab Italiā receptā, multo <T>morando</T> Lucia tandem in nave ad Italiam stetit.',
+   t:'morando',
+   q:'What is the grammatical role of <em>morando</em>?',
+   opts:['gerund — verbal noun, ablative','PPP — perfect passive participle','V — finite verb of the main clause','inf — complementary infinitive'],
+   co:0,
+   note:'<em>morando</em> is a <strong>gerund</strong> — a verbal noun — in the ablative. Gerunds decline like 2nd-decl. neuter nouns. The ablative + <em>multo</em> (degree) means "with/after much delaying." Gerunds are verbal nouns; gerundives are verbal adjectives.'},
+
+  {qt:'n',
+   s:'Epistulā ab Italiā receptā, multo morando <T>Lucia</T> tandem in nave ad Italiam stetit.',
+   t:'Lucia',
+   q:'What is the grammatical role of <em>Lucia</em>?',
+   opts:['S — nominative subject of stetit','DO — accusative direct object','PP — object of a preposition','IO — dative indirect object'],
+   co:0,
+   note:'<em>Lucia</em> is in the nominative — it is the <strong>subject</strong> of <em>stetit</em> (she stood). The nominative case marks the subject of a finite verb.'},
+
+  {qt:'n',
+   s:'Epistulā ab Italiā receptā, multo morando Lucia tandem in <T>nave</T> ad Italiam stetit.',
+   t:'nave',
+   q:'What is the grammatical role of <em>nave</em>?',
+   opts:['PP — preposition + ablative','abl — bare ablative, no preposition','S — nominative, subject','DO — accusative, direct object'],
+   co:0,
+   note:'<em>nave</em> is ablative after the preposition <em>in</em>: <em>in nave</em> = "in/on the ship" — a <strong>prepositional phrase (PP)</strong>. When the ablative follows a preposition, label it PP; reserve bare "abl" for ablatives without a preposition (means, manner, separation without <em>ā</em>).'},
+
+  {qt:'v',
+   s:'Trans mare spectavit et <T>mirabatur</T> quantos annos in Hispaniā vivisse.',
+   t:'mirabatur',
+   q:'What is the grammatical role of <em>mirabatur</em>?',
+   opts:['VoH — introduces an indirect statement','V — simple finite verb, no dependent clause','LV — linking verb','inf-V — inside an indirect statement'],
+   co:0,
+   note:'<em>mirabatur</em> (was marveling, wondering) introduces the perfect infinitive <em>vivisse</em> as its indirect complement. Any verb of thinking/saying/knowing/perceiving that governs an infinitive clause is labeled <strong>VoH</strong> — it is the head verb of the indirect statement.'},
+
+  {qt:'v',
+   s:'mirabatur quantos annos in Hispaniā <T>vivisse</T> et numquam ā familā audivisse.',
+   t:'vivisse',
+   q:'What is the grammatical role of <em>vivisse</em>?',
+   opts:['inf-V — infinitive verb inside indirect statement','V — main finite verb','gerund — verbal noun, accusative','inf — simple complementary infinitive'],
+   co:0,
+   note:'<em>vivisse</em> (perf. act. inf. of <em>vivo</em>) is the <strong>infinitive verb inside</strong> the indirect statement introduced by <em>mirabatur</em>. We label it <strong>inf-V</strong> to distinguish it from a simple complementary infinitive (which just completes another verb, without a full accusative + infinitive structure).'},
+
+  {qt:'v',
+   s:'epistula a Metellā <T>erat</T>.',
+   t:'erat',
+   q:'What is the grammatical role of <em>erat</em>?',
+   opts:['LV — linking verb (esse = to be)','V — action/transitive verb','VoH — introduces an indirect statement','inf-V — inside an indirect statement'],
+   co:0,
+   note:'<em>esse</em> and all its forms are always <strong>linking verbs (LV)</strong>. A linking verb connects the subject to a description or complement rather than showing action. <em>erat</em> = "was" — it links <em>epistula</em> to <em>a Metellā</em> (from Metella).'},
+
+  {qt:'n',
+   s:'qui <T>litteram</T> tulit eandem feminam confirmavit.',
+   t:'litteram',
+   q:'What is the grammatical role of <em>litteram</em>?',
+   opts:['DO — accusative, direct object','S — nominative, subject','PP — preposition + ablative','abl — bare ablative, no preposition'],
+   co:0,
+   note:'<em>litteram</em> is accusative — it is the <strong>direct object</strong> of <em>tulit</em> (carried). The accusative marks the noun that directly receives the action of a transitive verb.'},
+
+  {qt:'v',
+   s:'qui litteram tulit eandem feminam <T>confirmavit</T>, Metella in Mantuā erat.',
+   t:'confirmavit',
+   q:'What is the grammatical role of <em>confirmavit</em>?',
+   opts:['VoH — introduces an indirect statement','V — simple finite verb, no dependent clause','LV — linking verb','inf — infinitive'],
+   co:0,
+   note:'<em>confirmavit</em> (confirmed, affirmed) introduces the following indicative clause as an <strong>indirect statement</strong> — a post-classical usage. In classical Latin, verbs of affirming take AcI; here the indicative clause is used. The role is still <strong>VoH</strong>, the head verb governing the reported speech.'},
+
+  {qt:'n',
+   s:'Magister <T>navis</T>, nomine Heraclio, Luciae et ceteris in nave hortabatur.',
+   t:'navis',
+   q:'What is the grammatical role of <em>navis</em>?',
+   opts:['G — genitive, possessive','S — nominative, subject','DO — accusative, direct object','PP — preposition + ablative'],
+   co:0,
+   note:'<em>navis</em> is genitive of <em>navis, navis</em> (ship): "master <em>of the ship</em>." This is a <strong>possessive genitive</strong> — the Magister belongs to the ship. Genitive answers "of whom?" or "of what?"'},
+
+  {qt:'v',
+   s:'ad inferiorem navem <T>eundum</T> est!',
+   t:'eundum',
+   q:'What is the grammatical role of <em>eundum</em>?',
+   opts:['gerundive — impersonal obligation','PPP — perfect passive participle','inf-V — inside an indirect statement','V — finite verb in the main clause'],
+   co:0,
+   note:'<em>eundum est</em> = the <strong>impersonal gerundive</strong> of <em>eo, ire</em> + <em>est</em>: "one must go." The neuter gerundive is used when there is no personal subject. This construction always expresses obligation. Note that <em>eo</em> is irregular; its gerundive is <em>eundum</em>, not *"iendum."'},
+
+  {qt:'n',
+   s:'caelum erat magnifice <T>coloribus</T> variatum.',
+   t:'coloribus',
+   q:'What is the grammatical role of <em>coloribus</em>?',
+   opts:['abl — instrumental ablative, no preposition','PP — preposition + ablative','DO — accusative, direct object','IO — dative, indirect object'],
+   co:0,
+   note:'<em>coloribus</em> is a bare ablative (no preposition) expressing <strong>means or instrument</strong>: "varied <em>by/with</em> colors." The instrumental ablative answers "by what means?" and never takes a preposition. Distinguish from the ablative of agent, which requires <em>ā/ab</em> and a personal agent.'},
+
+  {qt:'p',
+   s:'caelum erat magnifice coloribus <T>variatum</T>.',
+   t:'variatum',
+   q:'<em>variatum</em> is a PPP. What word does it describe?',
+   opts:['caelum — nom. n. sg.','coloribus — abl. pl.','magnifice — adverb, not a noun','erat — verb, not a noun'],
+   co:0,
+   note:'<em>variatum</em> (PPP of <em>variō</em>) is neuter, nominative, singular — exactly matching <em>caelum</em> (also neut., nom., sg.). "The sky was magnificently varied with colors." <em>coloribus</em> is an instrumental ablative (the means), not a noun being described.'},
+
+  {qt:'p',
+   s:'Sub puppibus, Claudia in lecto <T>celata</T> est.',
+   t:'celata',
+   q:'<em>celata</em> is a PPP. What word does it describe?',
+   opts:['Claudia — nom. f. sg.','lecto — abl. m. sg.','puppibus — abl. pl.','Sub — preposition, not a noun'],
+   co:0,
+   note:'<em>celata</em> (PPP of <em>cēlō</em>) is feminine, nominative, singular — matching <em>Claudia</em> (also fem., nom., sg.). <em>celata est</em> together form a <strong>perfect passive</strong>: "was hidden." The PPP in a perf. passive always agrees with the subject.'},
+
+  {qt:'n',
+   s:'Claudia in lecto celata est et <T>Luciae</T> descendenti loquitur.',
+   t:'Luciae',
+   q:'What is the grammatical role of <em>Luciae</em>?',
+   opts:['IO — dative, indirect object','S — nominative, subject','G — genitive','DO — accusative, direct object'],
+   co:0,
+   note:'<em>Luciae</em> is the dative of <em>Lucia</em>, functioning as the <strong>indirect object</strong> of <em>loquitur</em>: "speaks <em>to</em> Lucia." Verbs of speaking, giving, and showing routinely take a dative IO.'},
+
+  {qt:'p',
+   s:'et Luciae <T>descendenti</T> loquitur.',
+   t:'descendenti',
+   q:'<em>descendenti</em> is a PAP. What word does it describe?',
+   opts:['Luciae — dat. f. sg.','Claudia — nom. f. sg.','lecto — abl. m. sg.','loquitur — verb, not a noun'],
+   co:0,
+   note:'<em>descendenti</em> is a present active participle, dative, feminine, singular — agreeing with <em>Luciae</em> (also dat., f., sg.): "to Lucia <em>as she was descending</em>." The PAP adds a circumstantial idea to the noun it describes.'},
+
+  {qt:'v',
+   s:'Magister <T>dixit</T> tempestatem adventuram esse.',
+   t:'dixit',
+   q:'What is the grammatical role of <em>dixit</em>?',
+   opts:['VoH — introduces an indirect statement','V — simple finite verb, no dependent AcI','LV — linking verb','inf — infinitive'],
+   co:0,
+   note:'<em>dixit</em> (said) introduces the accusative + infinitive indirect statement: <em>tempestatem adventuram esse</em>. Any verb of saying/thinking/perceiving that governs an AcI is labeled <strong>VoH</strong> — it is the head verb governing the infinitive clause.'},
+
+  {qt:'n',
+   s:'Magister dixit <T>tempestatem</T> adventuram esse.',
+   t:'tempestatem',
+   q:'In the indirect statement, what is the role of <em>tempestatem</em>?',
+   opts:['S — accusative subject of the infinitive','DO — accusative, direct object','PP — preposition + ablative','abl — bare ablative, no preposition'],
+   co:0,
+   note:'In an AcI (accusative + infinitive) indirect statement, the <strong>subject</strong> of the infinitive is in the <strong>accusative</strong>: <em>tempestatem</em> is the subject of <em>esse</em>, not the direct object of <em>dixit</em>. Label it <strong>S</strong> — it is the subject of the infinitive clause, even though it is accusative in form.'},
+
+  {qt:'p',
+   s:'Magister dixit tempestatem <T>adventuram</T> esse.',
+   t:'adventuram',
+   q:'<em>adventuram</em> is a FAP. What word does it describe?',
+   opts:['tempestatem — acc. f. sg.','Magister — nom. m. sg.','esse — infinitive, not a noun','nave — acc. f. sg.'],
+   co:0,
+   note:'<em>adventuram</em> is a future active participle (acc., f., sg.) of <em>advenio</em>, agreeing with <em>tempestatem</em> (acc., f., sg.): "the storm about to arrive." <em>adventuram esse</em> together form the <strong>future active infinitive</strong>, expressing an action anticipated in the future relative to <em>dixit</em>.'},
+
+  {qt:'v',
+   s:'Post annos et <T>destruendum</T> totius domi in Pompeiis, firme adstetit.',
+   t:'destruendum',
+   q:'What is the grammatical role of <em>destruendum</em>?',
+   opts:['gerund — verbal noun, accusative after post','gerundive — verbal adjective agreeing with a noun','PPP — perfect passive participle','inf-V — infinitive inside an indirect statement'],
+   co:0,
+   note:'<em>destruendum</em> is a <strong>gerund</strong> — verbal noun in the accusative after <em>post</em> (which always takes the accusative): "after the destruction of the whole house." <em>totius domi</em> is an objective genitive. (A gerundive would need to agree with a noun in number/case/gender; destruendum here is a fixed neuter form.)'},
+
+  {qt:'a',
+   s:'Post annos et destruendum <T>totius</T> domi in Pompeiis, firme adstetit.',
+   t:'totius',
+   q:'<em>totius</em> is an adjective describing <em>domi</em>. What label does it share with <em>domi</em>?',
+   opts:['G — agrees with genitive noun domi','S — agrees with nominative subject','PP — agrees with a PP noun','DO — agrees with accusative direct object'],
+   co:0,
+   note:'<em>domi</em> is genitive of <em>domus</em>, serving as an <strong>objective genitive</strong> with the gerund <em>destruendum</em>. <em>totius</em> is an adjective modifying <em>domi</em>, so it shares the same label: <strong>G</strong>. Adjectives always agree with and share the label of their noun.'},
+
+  {qt:'p',
+   s:'Etsi cetera familia <T>amissa</T> erat, mater eius videnda est.',
+   t:'amissa',
+   q:'<em>amissa</em> is a PPP. What word does it describe?',
+   opts:['familia — nom. f. sg.','mater — nom. f. sg.','cetera — adjective, not the head noun','eius — genitive pronoun, not a noun'],
+   co:0,
+   note:'<em>amissa</em> (PPP of <em>amittō</em>) is feminine, nominative, singular — agreeing with <em>familia</em> (also fem., nom., sg.). <em>amissa erat</em> = pluperfect passive: "had been lost." <em>cetera</em> is also an adjective describing <em>familia</em>, not the noun being described by <em>amissa</em>.'},
+
+  {qt:'n',
+   s:'Etsi cetera familia amissa erat, <T>mater</T> eius videnda est.',
+   t:'mater',
+   q:'What is the grammatical role of <em>mater</em>?',
+   opts:['S — nominative, subject','DO — accusative, direct object','G — genitive','IO — dative, indirect object'],
+   co:0,
+   note:'<em>mater</em> is nominative — the <strong>subject</strong> of the personal gerundive construction <em>videnda est</em>. In the personal gerundive of obligation, the gerundive agrees with the nominative subject: "the mother must be seen" (= she must see her mother).'},
+
+  {qt:'v',
+   s:'Etsi cetera familia amissa erat, mater eius <T>videnda</T> est.',
+   t:'videnda',
+   q:'What is the grammatical role of <em>videnda</em>?',
+   opts:['gerundive — of obligation','PPP — perfect passive participle','FAP — future active participle','inf — simple infinitive'],
+   co:0,
+   note:'<em>videnda</em> is the <strong>gerundive</strong> of <em>videō</em>, expressing obligation: <em>videnda est</em> = "must be seen." Gerundive of obligation = gerundive + <em>esse</em>. Since <em>mater</em> is nominative (personal construction), the gerundive is feminine, nominative, singular to agree with it.'},
+
+  {qt:'a',
+   s:'Etsi <T>cetera</T> familia amissa erat, mater eius videnda est.',
+   t:'cetera',
+   q:'<em>cetera</em> is an adjective describing <em>familia</em>. What label does it share with <em>familia</em>?',
+   opts:['S — agrees with the subject noun','DO — agrees with direct object','G — agrees with genitive noun','PP — agrees with a PP noun'],
+   co:0,
+   note:'<em>familia</em> is the nominative <strong>subject</strong> of <em>amissa erat</em>. <em>cetera</em> (the rest of, the other) is an adjective modifying <em>familia</em>, so it shares the same label: <strong>S</strong>. "The rest of the family had been lost."'},
+];
+
+// ── state ──────────────────────────────────────────────────────
+let drawn=[], answered={}, sC=0, sT=0;
+
+function newSet(){
+  const idx=[...Array(DB.length).keys()];
+  for(let i=idx.length-1;i>0;i--){const j=0|Math.random()*(i+1);[idx[i],idx[j]]=[idx[j],idx[i]];}
+  drawn=idx.slice(0,5); answered={};
+  render(); window.scrollTo(0,0);
+}
+
+function updS(){const d=document.getElementById('score-d');if(d)d.textContent=sT>0?`${sC}/${sT}`:''}
+
+function render(){
+  const pg=document.getElementById('page');
+  pg.innerHTML=drawn.map((di,k)=>{
+    const it=DB[di];
+    const uid=`q${di}`;
+    const sentH=it.s.replace('<T>','<span class="tgt">').replace('</T>','</span>');
+    const sh=shuffleOpts(it.opts,it.co);
+    const hdr={n:'noun',v:'verb / action',p:'participle',a:'adjective'}[it.qt];
+    const tag={n:'<span class="lbl n">noun</span>',v:'<span class="lbl v">verb</span>',p:'<span class="lbl p">participle</span>',a:'<span class="lbl a">adjective</span>'}[it.qt];
+    return `<div class="card">
+      <div class="ch ${it.qt}"><span>Q${k+1} — <em>${it.t}</em></span>${tag}</div>
+      <div class="cs">${sentH}</div>
+      <div class="cq">${it.q}</div>
+      <div class="mc">${sh.opts.map((o,oi)=>`<button class="mb" id="${uid}-b${oi}" onclick="ans(${di},'${uid}',${oi},${sh.co})">${o}</button>`).join('')}</div>
+      <div class="fb" id="${uid}-fb"></div>
+    </div>`;
+  }).join('');
+}
+
+function shuffleOpts(opts,co){
+  const correct=opts[co];
+  const arr=[...opts];
+  for(let i=arr.length-1;i>0;i--){const j=0|Math.random()*(i+1);[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return {opts:arr,co:arr.indexOf(correct)};
+}
+
+function ans(di,uid,chosen,correct){
+  if(answered[uid])return;
+  answered[uid]=true; sT++;
+  const ok=(chosen===correct);if(ok)sC++;updS();
+  document.querySelectorAll(`[id^="${uid}-b"]`).forEach(b=>b.disabled=true);
+  document.getElementById(`${uid}-b${chosen}`).classList.add(ok?'ok':'err');
+  if(!ok)document.getElementById(`${uid}-b${correct}`).classList.add('ok');
+  const fb=document.getElementById(`${uid}-fb`);
+  fb.innerHTML=(ok?'✓ ':'✗ ')+DB[di].note;
+  fb.className=`fb show ${ok?'ok':'err'}`;
+}
+
+// ── chart ──────────────────────────────────────────────────────
+const LABEL_REF=[
+  {cat:'Noun roles',rows:[
+    ['S','Nominative subject of a finite verb','Lucia, mater, Epistula'],
+    ['G','Genitive — of X','navis, domi (totius domi), eius'],
+    ['IO','Dative indirect object','Luciae (loquitur)'],
+    ['DO','Accusative direct object','litteram, mare (trans)'],
+    ['PP','Preposition + its case','in nave, ad Italiam, sub puppibus'],
+    ['abl','Bare ablative (no preposition): means, manner, separation','coloribus, ā familā'],
+  ]},
+  {cat:'Verb / action roles',rows:[
+    ['V','Finite action verb (main clause)','stetit, tulit, adstetit'],
+    ['LV','Linking verb (esse and only esse)','erat, est'],
+    ['VoH','Verb of headword — governs an indirect statement','mirabatur, confirmavit, dixit'],
+    ['inf','Simple complementary infinitive (not inside AcI)','potest ire, vult manere'],
+    ['inf-V','Infinitive verb inside an indirect statement','vivisse, audivisse, esse (after dixit)'],
+    ['gerund','Verbal noun (declines: gerundi, gerundo…)','morando, destruendum'],
+    ['gerundive','Verbal adjective — agreement with a noun, or impersonal obligation','eundum est, videnda est'],
+  ]},
+  {cat:'Participle questions',rows:[
+    ['PPP','Perfect Passive Participle — ask what noun it describes','receptā (→Epistulā), variatum (→caelum)'],
+    ['PAP','Present Active Participle — ask what noun it describes','descendenti (→Luciae)'],
+    ['FAP','Future Active Participle — ask what noun it describes','adventuram (→tempestatem)'],
+  ]},
+  {cat:'Adjective questions',rows:[
+    ['shares S','Adjective describing a subject noun','cetera (→familia, S)'],
+    ['shares G','Adjective describing a genitive noun','totius (→domi, G)'],
+    ['shares DO','Adjective describing a direct object','eandem (→feminam, DO)'],
+    ['shares PP','Adjective describing a PP noun','inferiorem (→navem, PP)'],
+  ]},
+];
+
+function toggleRef(){
+  const body=document.getElementById('ref-body');
+  const btn=document.querySelector('.tog');
+  const open=body.classList.toggle('open');
+  btn.textContent=(open?'▼ ':'▶ ')+'Show label chart';
+  if(open&&!body.innerHTML.trim())buildRef();
+}
+
+function buildRef(){
+  document.getElementById('ref-body').innerHTML=LABEL_REF.map(sec=>`
+    <p style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#7a5c3a;margin:14px 0 5px;">${sec.cat}</p>
+    <table class="rt"><tr><th style="width:110px;">Label</th><th>Meaning</th><th>Example from text</th></tr>
+    ${sec.rows.map(([l,m,e])=>`<tr><td style="font-weight:700;font-family:monospace;color:#2c1a0e;">${l}</td><td>${m}</td><td style="color:#666;font-style:italic;">${e}</td></tr>`).join('')}
+    </table>`).join('')+
+    `<p style="font-size:.76rem;color:#888;margin-top:10px;">Database: ${DB.length} items · 5 drawn per set.</p>`;
+}
+
+// ── chart of items by label type ──
+function buildItemChart(){
+  // count items by qt
+  const cnt={n:0,v:0,p:0,a:0};
+  DB.forEach(it=>cnt[it.qt]++);
+  // also count by specific label in correct option
+  return cnt;
+}
+
+newSet();
+</script>
+</body>
+</html>
