@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stage 4 — Present Passive Practice</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Georgia,serif;font-size:16px;background:#f2f0f8;color:#1a1030;min-height:100vh;}
+#topbar{position:sticky;top:0;z-index:100;background:#2a1a5c;color:#f2f0f8;display:flex;align-items:center;gap:12px;padding:0 20px;height:50px;}
+#topbar h1{font-size:.93rem;font-weight:700;flex:1;}
+#score-d{font-size:.8rem;opacity:.85;}
+.tb{background:#5c3fa0;border:none;color:#fff;border-radius:5px;padding:6px 16px;font-size:.84rem;cursor:pointer;font-family:inherit;}
+.tb:hover{background:#42297a;}.tb.s{background:transparent;border:1px solid #b09cdc;}.tb.s:hover{background:#221450;}
+#page{max-width:860px;margin:0 auto;padding:20px 16px 50px;}
+.card{background:#fff;border:1.5px solid #b09cdc;border-radius:10px;margin-bottom:16px;overflow:hidden;}
+.ch{padding:8px 14px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;}
+.ch.v{background:#e8e0ff;color:#2a1a5c;}
+.ch.n{background:#ddeeff;color:#00407a;}
+.ch.a{background:#fde8d0;color:#7d3000;}
+.lbl{font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:10px;}
+.lbl.v{background:#d8d0ff;color:#2a1a5c;}
+.lbl.n{background:#cce5ff;color:#004085;}
+.lbl.a{background:#fde8d0;color:#7d3000;}
+.cs{padding:11px 14px 8px;font-size:.97rem;line-height:1.85;font-style:italic;border-bottom:1px solid #d8d0f0;}
+.cs .tgt{background:#ede8ff;border-bottom:2.5px solid #5c3fa0;border-radius:2px;padding:0 2px;font-style:normal;font-weight:700;}
+.cq{padding:9px 14px 3px;font-size:.87rem;color:#1a1030;font-weight:700;line-height:1.4;}
+.mc{padding:4px 14px 12px;display:flex;flex-direction:column;gap:5px;}
+.mb{background:#f5f3ff;border:1px solid #b09cdc;border-radius:5px;padding:7px 10px;font-size:.84rem;text-align:left;cursor:pointer;font-family:inherit;line-height:1.35;transition:background .1s;}
+.mb:hover:not(:disabled){background:#e0d8ff;}.mb:disabled{cursor:default;opacity:.8;}
+.mb.ok{background:#d4edda;border-color:#28a745;font-weight:700;}.mb.err{background:#f8d7da;border-color:#dc3545;}
+.fb{display:none;margin:0 14px 12px;padding:9px 12px;border-radius:6px;font-size:.83rem;line-height:1.55;}
+.fb.show{display:block;}.fb.ok{background:#d4edda;color:#155724;border:1px solid #c3e6cb;}
+.fb.err{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
+#ref{max-width:860px;margin:0 auto;padding:0 16px 60px;}
+.rt{background:#fff;border:1.5px solid #b09cdc;border-radius:10px;border-collapse:collapse;width:100%;font-size:.83rem;}
+.rt th{background:#ede8ff;border:1px solid #b09cdc;padding:6px 10px;text-align:left;font-size:.73rem;text-transform:uppercase;letter-spacing:.04em;color:#2a1a5c;}
+.rt td{border:1px solid #d8d0f0;padding:6px 10px;vertical-align:top;}
+.tog{background:none;border:2px solid #b09cdc;border-radius:6px;padding:7px 16px;font-size:.84rem;cursor:pointer;font-family:inherit;color:#2a1a5c;margin-bottom:14px;}
+.tog:hover{background:#ede8ff;}#ref-body{display:none;}#ref-body.open{display:block;}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <h1>Stage 4 — Present Passive Practice</h1>
+  <span id="score-d"></span>
+  <button class="tb" onclick="newSet()">↺ New 5</button>
+  <button class="tb s" onclick="document.getElementById('ref').scrollIntoView({behavior:'smooth'})">Endings ↓</button>
+</div>
+<div id="page"></div>
+<div id="ref">
+  <button class="tog" onclick="toggleRef()">▶ Show endings chart</button>
+  <div id="ref-body"></div>
+</div>
+<script>
+// qt: v=verb role, n=noun role, a=adjective shares label
+// co = correct index (0-based, before shuffle)
+const DB=[
+
+  // ── 3rd sg passive ──────────────────────────────────────────────
+  {qt:'v',
+   s:'Grumio a Metellā <T>laudatur</T>.',
+   t:'laudatur',
+   q:'What is the form and meaning of <em>laudatur</em>?',
+   opts:['V-pass — present passive 3rd sg: "is praised"','V — present active 3rd sg: "praises"','LV — linking verb','inf — infinitive'],
+   co:0,
+   note:'<em>laudatur</em> is the 3rd person singular present passive of <em>laudo</em>: Grumio "is being praised." The passive ending <strong>-tur</strong> signals that the subject (Grumio) receives the action rather than performing it. Active 3rd sg would be <em>laudat</em>.'},
+
+  {qt:'n',
+   s:'<T>Grumio</T> a Metellā laudatur.',
+   t:'Grumio',
+   q:'What is the grammatical role of <em>Grumio</em>?',
+   opts:['S — nominative, subject of passive verb','DO — accusative, direct object','PP — preposition + ablative','G — genitive'],
+   co:0,
+   note:'In a passive construction the subject is the person <em>receiving</em> the action. <em>Grumio</em> is nominative — he is the one being praised. The subject of a passive verb is still nominative, just as with an active verb.'},
+
+  {qt:'n',
+   s:'Grumio <T>a Metellā</T> laudatur.',
+   t:'a Metellā',
+   q:'What is the role of <em>Metellā</em> in <em>a Metellā</em>?',
+   opts:['PP — ablative of agent (ā/ab + person = "by")','PP — ablative of separation (from a place)','S — nominative, subject','IO — dative, indirect object'],
+   co:0,
+   note:'<em>ā/ab</em> + ablative of a <em>person</em> = the <strong>ablative of agent</strong>: "by Metella." This construction always pairs with a passive verb to name the person performing the action. Contrast the ablative of means (no preposition, a thing, not a person).'},
+
+  {qt:'v',
+   s:'Grumio a Caecilio <T>vituperatur</T>.',
+   t:'vituperatur',
+   q:'What is the form of <em>vituperatur</em>?',
+   opts:['V-pass — present passive 3rd sg','V — present active 3rd sg','V-pass — present passive 3rd pl','inf — infinitive'],
+   co:0,
+   note:'<em>vituperatur</em> is the 3rd sg present passive of <em>vitupero</em>: "is scolded/blamed." The -<em>atur</em> ending = 1st conjugation 3rd sg passive. Active: <em>vituperat</em>.'},
+
+  {qt:'v',
+   s:'Quintus a patre <T>rogatur</T>.',
+   t:'rogatur',
+   q:'What is the form and meaning of <em>rogatur</em>?',
+   opts:['V-pass — present passive 3rd sg: "is asked"','V — present active 3rd sg: "asks"','V-pass — present passive 1st sg: "I am asked"','LV — linking verb'],
+   co:0,
+   note:'<em>rogatur</em> is 3rd sg present passive of <em>rogo</em>: "is asked." The active form <em>rogat</em> would mean "asks." Note that in the passive, Quintus (nominative) is the one being asked, and his father (ablative with <em>a</em>) is the one asking.'},
+
+  {qt:'n',
+   s:'Quintus <T>a patre</T> rogatur.',
+   t:'a patre',
+   q:'What is the role of <em>patre</em> in <em>a patre</em>?',
+   opts:['PP — ablative of agent (ā/ab + person = "by")','PP — ablative of separation (from a place)','abl — ablative of means, no preposition','S — nominative, subject'],
+   co:0,
+   note:'<em>a patre</em> = "by [his] father" — ablative of agent. The preposition <em>ā/ab</em> + ablative of a person always marks the agent of a passive verb. Here the father is the one doing the asking; Quintus is the one being asked.'},
+
+  // ── 3rd pl passive ──────────────────────────────────────────────
+  {qt:'v',
+   s:'actores in theatro <T>spectantur</T>.',
+   t:'spectantur',
+   q:'What is the form and meaning of <em>spectantur</em>?',
+   opts:['V-pass — present passive 3rd pl: "are watched"','V — present active 3rd pl: "watch"','V-pass — present passive 3rd sg: "is watched"','V — present active 3rd sg: "watches"'],
+   co:0,
+   note:'<em>spectantur</em> is 3rd pl present passive: "are being watched." The <strong>-ntur</strong> ending = 3rd pl passive. Compare 3rd sg <em>spectatur</em> (-<em>tur</em>). When a 3rd pl passive is used, look for a nominative plural subject.'},
+
+  {qt:'n',
+   s:'<T>actores</T> in theatro spectantur.',
+   t:'actores',
+   q:'What is the role of <em>actores</em>?',
+   opts:['S — nominative plural, subject of passive verb','DO — accusative plural, direct object','G — genitive plural','PP — preposition + ablative'],
+   co:0,
+   note:'<em>actores</em> is nominative plural, the <strong>subject</strong> of the passive verb <em>spectantur</em>: "the actors are being watched." With a 3rd pl passive verb always check for a matching nominative plural subject.'},
+
+  {qt:'v',
+   s:'servi mali a domino <T>puniuntur</T>.',
+   t:'puniuntur',
+   q:'What is the form of <em>puniuntur</em>?',
+   opts:['V-pass — present passive 3rd pl','V — present active 3rd pl','V-pass — present passive 3rd sg','V — present active 3rd sg'],
+   co:0,
+   note:'<em>puniuntur</em> is 3rd pl present passive of <em>punio</em> (4th conj.): "are punished." 4th conjugation passive endings follow the same pattern: <em>-ior, -iris, -itur, -imur, -imini, -iuntur</em>.'},
+
+  {qt:'n',
+   s:'<T>servi</T> mali a domino puniuntur.',
+   t:'servi',
+   q:'What is the role of <em>servi</em>?',
+   opts:['S — nominative plural, subject of passive verb','G — genitive singular','DO — accusative plural','IO — dative plural'],
+   co:0,
+   note:'<em>servi</em> is nominative plural — the subject of the passive verb <em>puniuntur</em>: "the slaves are being punished." The master (<em>a domino</em>) is the agent performing the punishment.'},
+
+  {qt:'a',
+   s:'servi <T>mali</T> a domino puniuntur.',
+   t:'mali',
+   q:'<em>mali</em> describes <em>servi</em>. What label does it share?',
+   opts:['S — agrees with the subject noun','DO — agrees with direct object','G — agrees with genitive noun','PP — agrees with a PP noun'],
+   co:0,
+   note:'<em>servi</em> is the nominative plural <strong>subject</strong> of the passive verb. <em>mali</em> (bad) agrees with <em>servi</em> in case, number, and gender, so it shares the label <strong>S</strong>. Adjectives always share the label of the noun they describe.'},
+
+  {qt:'v',
+   s:'cibaria ab ancillis <T>portantur</T>.',
+   t:'portantur',
+   q:'What is the form of <em>portantur</em>?',
+   opts:['V-pass — present passive 3rd pl','V — present active 3rd pl','V-pass — present passive 3rd sg','V — present active 3rd sg'],
+   co:0,
+   note:'<em>portantur</em> is 3rd pl present passive: "are being carried." The neuter plural subject <em>cibaria</em> (foodstuffs) looks like an accusative but is nominative here — passive verb confirms it is the subject.'},
+
+  {qt:'n',
+   s:'cibaria <T>ab ancillis</T> portantur.',
+   t:'ab ancillis',
+   q:'What is the role of <em>ancillis</em> in <em>ab ancillis</em>?',
+   opts:['PP — ablative of agent (ab + persons = "by")','abl — ablative of means, no preposition','IO — dative, indirect object','S — nominative, subject'],
+   co:0,
+   note:'<em>ab ancillis</em> = "by the slave-women" — ablative of agent. <em>ab</em> is used instead of <em>ā</em> before vowels and sometimes before <em>h</em>. The construction is the same: <em>ā/ab</em> + ablative of a person = agent of the passive verb.'},
+
+  // ── 1st sg passive ──────────────────────────────────────────────
+  {qt:'v',
+   s:'a Caecilio <T>vocor</T>.',
+   t:'vocor',
+   q:'What is the form and meaning of <em>vocor</em>?',
+   opts:['V-pass — present passive 1st sg: "I am called"','V — present active 1st sg: "I call"','V-pass — present passive 3rd sg: "he is called"','LV — linking verb'],
+   co:0,
+   note:'<strong>-or</strong> is the 1st person singular present passive ending: <em>vocor</em> = "I am called/summoned." The active 1st sg is <em>voco</em> ("I call"). Remember: the passive ending replaces the active one: <em>-o/-or, -as/-aris, -at/-atur</em>…'},
+
+  // ── 2nd sg passive ──────────────────────────────────────────────
+  {qt:'v',
+   s:'a magistro <T>vocaris</T>.',
+   t:'vocaris',
+   q:'What is the form and meaning of <em>vocaris</em>?',
+   opts:['V-pass — present passive 2nd sg: "you are called"','V — present active 2nd sg: "you call"','V-pass — present passive 1st sg: "I am called"','V-pass — present passive 3rd sg: "he is called"'],
+   co:0,
+   note:'<strong>-ris</strong> is the 2nd person singular present passive ending: <em>vocaris</em> = "you are called." Active 2nd sg is <em>vocas</em>. The <em>-ris</em> ending also appears in the future active of some verbs, so context matters.'},
+
+  // ── 1st pl passive ──────────────────────────────────────────────
+  {qt:'v',
+   s:'a domino <T>vocamur</T>.',
+   t:'vocamur',
+   q:'What is the form and meaning of <em>vocamur</em>?',
+   opts:['V-pass — present passive 1st pl: "we are called"','V — present active 1st pl: "we call"','V-pass — present passive 2nd pl: "you are called"','V-pass — present passive 3rd pl: "they are called"'],
+   co:0,
+   note:'<strong>-mur</strong> is the 1st person plural present passive ending: <em>vocamur</em> = "we are called." Active 1st pl is <em>vocamus</em>. Note the pattern: all passive plural endings begin with the same vowel as the active plural: <em>-mus/-mur, -tis/-mini, -nt/-ntur</em>.'},
+
+  // ── 2nd pl passive ──────────────────────────────────────────────
+  {qt:'v',
+   s:'a Caecilio <T>vocamini</T>.',
+   t:'vocamini',
+   q:'What is the form and meaning of <em>vocamini</em>?',
+   opts:['V-pass — present passive 2nd pl: "you all are called"','V — present active 2nd pl: "you all call"','V-pass — present passive 1st pl: "we are called"','V-pass — present passive 3rd pl: "they are called"'],
+   co:0,
+   note:'<strong>-mini</strong> is the 2nd person plural present passive ending: <em>vocamini</em> = "you (all) are called." Active 2nd pl is <em>vocatis</em>. This ending is distinctive and unlikely to be confused with anything else.'},
+
+  // ── 2nd conjugation passive ──────────────────────────────────────
+  {qt:'v',
+   s:'Metella a servis <T>videtur</T>.',
+   t:'videtur',
+   q:'What is the form of <em>videtur</em> in this sentence?',
+   opts:['V-pass — present passive 3rd sg: "is seen"','LV — linking verb meaning "seems"','V — present active 3rd sg: "sees"','inf — infinitive'],
+   co:0,
+   note:'<em>videtur</em> can mean (1) "is seen" (present passive) or (2) "seems" (linking verb). Here Metella is the nominative subject and <em>a servis</em> is the ablative of agent — so this is the <strong>passive</strong>: "Metella is seen by the slaves." Without an agent phrase, <em>videtur</em> would more likely be a linking verb.'},
+
+  {qt:'v',
+   s:'pecunia a mercatore <T>tenetur</T>.',
+   t:'tenetur',
+   q:'What is the form of <em>tenetur</em>?',
+   opts:['V-pass — present passive 3rd sg','V — present active 3rd sg','LV — linking verb','V-pass — present passive 3rd pl'],
+   co:0,
+   note:'<em>tenetur</em> is 3rd sg present passive of <em>teneo</em> (2nd conj.): "is held/kept." 2nd conjugation passive: <em>-eor, -eris, -etur, -emur, -emini, -entur</em>.'},
+
+  // ── 3rd conjugation passive ──────────────────────────────────────
+  {qt:'v',
+   s:'nuntius a Caecilio <T>mittitur</T>.',
+   t:'mittitur',
+   q:'What is the form of <em>mittitur</em>?',
+   opts:['V-pass — present passive 3rd sg','V — present active 3rd sg','V-pass — present passive 3rd pl','V — present active 2nd sg'],
+   co:0,
+   note:'<em>mittitur</em> is 3rd sg present passive of <em>mitto</em> (3rd conj.): "is sent." 3rd conjugation passive uses a connecting <em>i</em>: <em>-or, -eris, -itur, -imur, -imini, -untur</em>.'},
+
+  {qt:'n',
+   s:'<T>nuntius</T> a Caecilio mittitur.',
+   t:'nuntius',
+   q:'What is the role of <em>nuntius</em>?',
+   opts:['S — nominative, subject of passive verb','DO — accusative, direct object','G — genitive','IO — dative, indirect object'],
+   co:0,
+   note:'<em>nuntius</em> is nominative — the subject of the passive verb <em>mittitur</em>: "the messenger is sent." In the active this would be: <em>Caecilius nuntium mittit</em> (Caecilius sends the messenger). Passive flips subject and (former) object.'},
+
+  {qt:'v',
+   s:'fur ab ancilla <T>tenetur</T>.',
+   t:'tenetur',
+   q:'What is the form of <em>tenetur</em>?',
+   opts:['V-pass — present passive 3rd sg','V — present active 3rd sg','V-pass — present passive 3rd pl','LV — linking verb'],
+   co:0,
+   note:'<em>tenetur</em> is 3rd sg present passive of <em>teneo</em>: "is held." <em>ab ancilla</em> gives the agent (by the slave-woman).'},
+
+  // ── 4th conjugation passive ──────────────────────────────────────
+  {qt:'v',
+   s:'vox pueri ab omnibus <T>auditur</T>.',
+   t:'auditur',
+   q:'What is the form of <em>auditur</em>?',
+   opts:['V-pass — present passive 3rd sg','V — present active 3rd sg','V-pass — present passive 3rd pl','inf — infinitive'],
+   co:0,
+   note:'<em>auditur</em> is 3rd sg present passive of <em>audio</em> (4th conj.): "is heard." 4th conj. passive 3rd sg = <em>-itur</em>, same visual pattern as 3rd conj.: the difference is in the stem vowel (<em>i</em> vs. short <em>e/i</em>).'},
+
+  // ── Active vs passive contrast ───────────────────────────────────
+  {qt:'v',
+   s:'Caecilius servum <T>laudat</T>.',
+   t:'laudat',
+   q:'Is <em>laudat</em> active or passive?',
+   opts:['V — present active 3rd sg: "praises"','V-pass — present passive 3rd sg: "is praised"','V-pass — present passive 3rd pl: "are praised"','LV — linking verb'],
+   co:0,
+   note:'<em>laudat</em> is present <strong>active</strong>: "Caecilius praises the slave." The active ending <em>-at</em> contrasts with the passive <em>-atur</em>. With the active, the subject (Caecilius, nominative) performs the action; the slave (<em>servum</em>, accusative) is the direct object.'},
+
+  {qt:'v',
+   s:'servus a Caecilio <T>laudatur</T>.',
+   t:'laudatur',
+   q:'Is <em>laudatur</em> active or passive?',
+   opts:['V-pass — present passive 3rd sg: "is praised"','V — present active 3rd sg: "praises"','V — present active 3rd pl: "praise"','LV — linking verb'],
+   co:0,
+   note:'<em>laudatur</em> is present <strong>passive</strong>: "the slave is praised by Caecilius." Compare the previous sentence where <em>Caecilius</em> was the nominative subject doing the praising. Now <em>servus</em> is the subject receiving the praise, and Caecilius appears as the agent (<em>a Caecilio</em>).'},
+
+  // ── Means vs agent distinction ───────────────────────────────────
+  {qt:'n',
+   s:'porta a servo <T>hastā</T> pulsatur.',
+   t:'hastā',
+   q:'What is the role of <em>hastā</em>?',
+   opts:['abl — ablative of means (instrument, no preposition)','PP — ablative of agent (ā + person)','S — nominative, subject','DO — accusative, direct object'],
+   co:0,
+   note:'<em>hastā</em> is a bare ablative of <strong>means</strong> (instrument): "the door is struck <em>with a spear</em>." Contrast <em>a servo</em> (by the slave) — that is ablative of agent: ā/ab + person. The distinction: agent has ā/ab + a PERSON; means is bare ablative + a THING.'},
+
+  {qt:'n',
+   s:'Caecilius <T>ab Italia</T> redit.',
+   t:'ab Italia',
+   q:'What is the role of <em>Italia</em> in <em>ab Italia</em>?',
+   opts:['PP — ablative of separation (from a place)','PP — ablative of agent (ā + person = "by")','S — nominative, subject','abl — bare ablative, no preposition'],
+   co:0,
+   note:'<em>ab Italia</em> = "from Italy" — ablative of <strong>separation</strong>. Even though the construction is <em>ab</em> + ablative (same as agent), here <em>Italia</em> is a place, not a person. There is also no passive verb. Context decides: agent pairs with a passive verb and a person; separation pairs with a verb of motion and a place.'},
+
+  // ── Rogantur + agent ─────────────────────────────────────────────
+  {qt:'v',
+   s:'discipuli a magistro <T>rogantur</T>.',
+   t:'rogantur',
+   q:'What is the form of <em>rogantur</em>?',
+   opts:['V-pass — present passive 3rd pl','V-pass — present passive 3rd sg','V — present active 3rd pl','V — present active 3rd sg'],
+   co:0,
+   note:'<em>rogantur</em> is 3rd pl present passive: "are asked/questioned." The <em>-antur</em> ending = 1st conjugation 3rd pl passive. The students (<em>discipuli</em>, nominative pl.) are the ones being questioned.'},
+
+  {qt:'n',
+   s:'<T>discipuli</T> a magistro rogantur.',
+   t:'discipuli',
+   q:'What is the role of <em>discipuli</em>?',
+   opts:['S — nominative plural, subject of passive verb','G — genitive singular','DO — accusative plural','IO — dative plural'],
+   co:0,
+   note:'<em>discipuli</em> is nominative plural — the subject of the passive verb <em>rogantur</em>. The teacher (<em>a magistro</em>, ablative of agent) is doing the questioning; the students are receiving the action.'},
+
+];
+
+// ── state ─────────────────────────────────────────────────────────
+let drawn=[], answered={}, sC=0, sT=0;
+
+function newSet(){
+  const idx=[...Array(DB.length).keys()];
+  for(let i=idx.length-1;i>0;i--){const j=0|Math.random()*(i+1);[idx[i],idx[j]]=[idx[j],idx[i]];}
+  drawn=idx.slice(0,5); answered={};
+  renderCards(); window.scrollTo(0,0);
+}
+
+function updS(){const d=document.getElementById('score-d');if(d)d.textContent=sT>0?`${sC}/${sT}`:''}
+
+function renderCards(){
+  const pg=document.getElementById('page');
+  pg.innerHTML=drawn.map((di,k)=>{
+    const it=DB[di];
+    const uid=`q${di}`;
+    const sentH=it.s.replace('<T>','<span class="tgt">').replace('</T>','</span>');
+    const sh=shuffleOpts(it.opts,it.co);
+    const tag={v:'<span class="lbl v">verb</span>',n:'<span class="lbl n">noun</span>',a:'<span class="lbl a">adjective</span>'}[it.qt];
+    return `<div class="card">
+      <div class="ch ${it.qt}"><span>Q${k+1} — <em>${it.t}</em></span>${tag}</div>
+      <div class="cs">${sentH}</div>
+      <div class="cq">${it.q}</div>
+      <div class="mc">${sh.opts.map((o,oi)=>`<button class="mb" id="${uid}-b${oi}" onclick="ans(${di},'${uid}',${oi},${sh.co})">${o}</button>`).join('')}</div>
+      <div class="fb" id="${uid}-fb"></div>
+    </div>`;
+  }).join('');
+}
+
+function shuffleOpts(opts,co){
+  const correct=opts[co];
+  const arr=[...opts];
+  for(let i=arr.length-1;i>0;i--){const j=0|Math.random()*(i+1);[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return {opts:arr,co:arr.indexOf(correct)};
+}
+
+function ans(di,uid,chosen,correct){
+  if(answered[uid])return;
+  answered[uid]=true; sT++;
+  const ok=(chosen===correct);if(ok)sC++;updS();
+  document.querySelectorAll(`[id^="${uid}-b"]`).forEach(b=>b.disabled=true);
+  document.getElementById(`${uid}-b${chosen}`).classList.add(ok?'ok':'err');
+  if(!ok)document.getElementById(`${uid}-b${correct}`).classList.add('ok');
+  const fb=document.getElementById(`${uid}-fb`);
+  fb.innerHTML=(ok?'✓ ':'✗ ')+DB[di].note;
+  fb.className=`fb show ${ok?'ok':'err'}`;
+}
+
+// ── reference chart ───────────────────────────────────────────────
+const ENDINGS=[
+  {conj:'1st (-āre)',rows:[
+    ['1st sg','amor','I am loved'],
+    ['2nd sg','amāris','you are loved'],
+    ['3rd sg','amātur','he/she is loved'],
+    ['1st pl','amāmur','we are loved'],
+    ['2nd pl','amāminī','you all are loved'],
+    ['3rd pl','amantur','they are loved'],
+  ]},
+  {conj:'2nd (-ēre)',rows:[
+    ['1st sg','videor','I am seen'],
+    ['2nd sg','vidēris','you are seen'],
+    ['3rd sg','vidētur','he/she is seen'],
+    ['1st pl','vidēmur','we are seen'],
+    ['2nd pl','vidēminī','you all are seen'],
+    ['3rd pl','videntur','they are seen'],
+  ]},
+  {conj:'3rd (-ere)',rows:[
+    ['1st sg','mittor','I am sent'],
+    ['2nd sg','mitteris','you are sent'],
+    ['3rd sg','mittitur','he/she is sent'],
+    ['1st pl','mittimur','we are sent'],
+    ['2nd pl','mittiminī','you all are sent'],
+    ['3rd pl','mittuntur','they are sent'],
+  ]},
+  {conj:'4th (-īre)',rows:[
+    ['1st sg','audior','I am heard'],
+    ['2nd sg','audīris','you are heard'],
+    ['3rd sg','audītur','he/she is heard'],
+    ['1st pl','audīmur','we are heard'],
+    ['2nd pl','audīminī','you all are heard'],
+    ['3rd pl','audiuntur','they are heard'],
+  ]},
+];
+
+const AGENT_NOTE=`
+  <p style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#2a1a5c;margin:18px 0 6px;">Ablative of Agent vs. Ablative of Means</p>
+  <table class="rt"><tr><th>Construction</th><th>Form</th><th>Example</th><th>Translation</th></tr>
+  <tr><td style="font-weight:700;">Ablative of agent</td><td><em>ā/ab</em> + abl. of a <strong>person</strong></td><td><em>ā Metellā laudatur</em></td><td>is praised <strong>by Metella</strong></td></tr>
+  <tr><td style="font-weight:700;">Ablative of means</td><td>bare abl. of a <strong>thing</strong> (no prep.)</td><td><em>hastā pulsatur</em></td><td>is struck <strong>with a spear</strong></td></tr>
+  <tr><td style="font-weight:700;">Ablative of separation</td><td><em>ā/ab</em> + abl. of a <strong>place</strong></td><td><em>ab Italiā redit</em></td><td>returns <strong>from Italy</strong></td></tr>
+  </table>
+  <p style="font-size:.76rem;color:#888;margin-top:12px;">Database: ${DB.length} items · 5 drawn per set.</p>`;
+
+function toggleRef(){
+  const body=document.getElementById('ref-body');
+  const btn=document.querySelector('.tog');
+  const open=body.classList.toggle('open');
+  btn.textContent=(open?'▼ ':'▶ ')+'Show endings chart';
+  if(open&&!body.innerHTML.trim())buildRef();
+}
+
+function buildRef(){
+  document.getElementById('ref-body').innerHTML=
+    `<p style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#2a1a5c;margin:0 0 8px;">Present Passive Endings</p>`+
+    ENDINGS.map(c=>`
+      <p style="font-weight:700;font-size:.78rem;color:#5c3fa0;margin:14px 0 5px;">${c.conj}</p>
+      <table class="rt"><tr><th style="width:90px;">Person</th><th style="width:140px;">Form</th><th>Meaning</th></tr>
+      ${c.rows.map(([p,f,m])=>`<tr><td style="color:#555;">${p}</td><td style="font-style:italic;font-weight:700;">${f}</td><td>${m}</td></tr>`).join('')}
+      </table>`).join('')+AGENT_NOTE;
+}
+
+newSet();
+</script>
+</body>
+</html>
