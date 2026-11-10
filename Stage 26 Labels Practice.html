@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stage 26 — Cum Clauses Practice</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Georgia,serif;font-size:16px;background:#edf0f5;color:#0e1a2e;min-height:100vh;}
+#topbar{position:sticky;top:0;z-index:100;background:#1a2a4a;color:#edf0f5;display:flex;align-items:center;gap:12px;padding:0 20px;height:50px;}
+#topbar h1{font-size:.93rem;font-weight:700;flex:1;}
+#score-d{font-size:.8rem;opacity:.85;}
+.tb{background:#3a5a9c;border:none;color:#fff;border-radius:5px;padding:6px 16px;font-size:.84rem;cursor:pointer;font-family:inherit;}
+.tb:hover{background:#2a4278;}.tb.s{background:transparent;border:1px solid #90aad8;}.tb.s:hover{background:#14213a;}
+#page{max-width:860px;margin:0 auto;padding:20px 16px 50px;}
+
+/* cards */
+.card{background:#fff;border:1.5px solid #90aad8;border-radius:10px;margin-bottom:16px;overflow:hidden;}
+.cnum{padding:6px 14px 0;font-size:.72rem;font-weight:700;color:#5070a0;}
+
+/* sentence display */
+.cs{padding:11px 14px 8px;font-size:1.0rem;line-height:1.9;font-style:italic;border-bottom:1px solid #d0daf0;}
+/* noun/verb target: underline highlight */
+.cs .tgt{background:#fff8dc;border-bottom:2.5px solid #b08020;border-radius:2px;padding:0 2px;font-style:normal;font-weight:700;}
+/* construction target: boxed highlight */
+.ctype .cs .tgt{background:#e8f0ff;border:2px solid #3a5a9c;border-radius:4px;padding:1px 4px;font-style:italic;font-weight:normal;}
+
+.cq{padding:9px 14px 3px;font-size:.87rem;color:#0e1a2e;font-weight:700;line-height:1.4;}
+.mc{padding:4px 14px 12px;display:flex;flex-direction:column;gap:5px;}
+.mb{background:#f0f4fc;border:1px solid #90aad8;border-radius:5px;padding:8px 12px;font-size:.86rem;text-align:left;cursor:pointer;font-family:inherit;line-height:1.35;transition:background .1s;}
+.mb:hover:not(:disabled){background:#dce6f8;}.mb:disabled{cursor:default;opacity:.8;}
+.mb.ok{background:#d4edda;border-color:#28a745;font-weight:700;}.mb.err{background:#f8d7da;border-color:#dc3545;}
+.fb{display:none;margin:0 14px 12px;padding:9px 12px;border-radius:6px;font-size:.83rem;line-height:1.55;}
+.fb.show{display:block;}.fb.ok{background:#d4edda;color:#155724;border:1px solid #c3e6cb;}
+.fb.err{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
+
+/* question-type color strips */
+.qstrip{height:4px;}
+.qstrip.n{background:#3a8abf;}
+.qstrip.v{background:#2a7a5a;}
+.qstrip.c{background:#9c6a1a;}
+
+/* reference */
+#ref{max-width:860px;margin:0 auto;padding:0 16px 60px;}
+.rt{background:#fff;border:1.5px solid #90aad8;border-radius:10px;border-collapse:collapse;width:100%;font-size:.82rem;}
+.rt th{background:#dce6f8;border:1px solid #90aad8;padding:6px 10px;text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:#1a2a4a;}
+.rt td{border:1px solid #d0daf0;padding:6px 10px;vertical-align:top;}
+.tog{background:none;border:2px solid #90aad8;border-radius:6px;padding:7px 16px;font-size:.84rem;cursor:pointer;font-family:inherit;color:#1a2a4a;margin-bottom:14px;}
+.tog:hover{background:#dce6f8;}#ref-body{display:none;}#ref-body.open{display:block;}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <h1>Stage 26 — Word Roles &amp; Construction Practice</h1>
+  <span id="score-d"></span>
+  <button class="tb" onclick="newSet()">↺ New 5</button>
+</div>
+<div id="ref">
+  <button class="tog" onclick="toggleRef()">▼ Hide reference chart</button>
+  <div id="ref-body" class="open"></div>
+</div>
+<div id="page"></div>
+<script>
+// qt:'n' = noun/adj word role: S / G / IO / DO / PP / Voc
+// qt:'v' = verb/participle type: V / Inf / PAP / FAP / PPP
+// qt:'c' = construction identification: boxed phrase type
+const DB=[
+
+  // ══ WORD ROLES ══════════════════════════════════════════════════
+
+  {qt:'n',
+   s:'<T>heres</T> avidus villam ēmit.',
+   t:'heres',
+   q:'What is the grammatical role of <em>heres</em>?',
+   opts:['S — subject (nominative)','DO — direct object (accusative)','G — genitive','PP — prepositional phrase'],
+   co:0,
+   note:'<em>heres</em> is nominative — the <strong>subject</strong> of <em>ēmit</em>. The nominative marks whoever is performing the action of the main verb.'},
+
+  {qt:'n',
+   s:'Flaccus <T>heredem</T> avidum in villā invēnit.',
+   t:'heredem',
+   q:'What is the grammatical role of <em>heredem</em>?',
+   opts:['DO — direct object (accusative)','S — subject (nominative)','G — genitive','IO — indirect object (dative)'],
+   co:0,
+   note:'<em>heredem</em> is accusative — the <strong>direct object</strong> of <em>invēnit</em>. The accusative marks the person or thing directly receiving the action of a transitive verb.'},
+
+  {qt:'n',
+   s:'timor <T>heredis</T> avidi magnus erat.',
+   t:'heredis',
+   q:'What is the grammatical role of <em>heredis</em>?',
+   opts:['G — genitive','S — subject (nominative)','DO — direct object (accusative)','IO — indirect object (dative)'],
+   co:0,
+   note:'<em>heredis</em> is genitive — it expresses whose fear it is: "the fear <strong>of the greedy heir</strong>." The genitive answers "of whom?" or "of what?"'},
+
+  {qt:'n',
+   s:'Melissa <T>heredi</T> suō opem tulit.',
+   t:'heredi',
+   q:'What is the grammatical role of <em>heredi</em>?',
+   opts:['IO — indirect object (dative)','G — genitive','S — subject (nominative)','DO — direct object (accusative)'],
+   co:0,
+   note:'<em>heredi</em> is dative — the <strong>indirect object</strong> of <em>opem tulit</em>. <em>Opem ferre</em> (to bring help) takes a dative: "brought help <strong>to her heir</strong>." Dative answers "to whom?" or "for whom?"'},
+
+  {qt:'n',
+   s:'heres <T>servīs</T> imperāvit.',
+   t:'servīs',
+   q:'<em>Imperō</em> takes a direct object. What case does <em>servīs</em> use?',
+   opts:['DO (dative ending)','DO (accusative ending)','DO (ablative ending)'],
+   co:0,
+   note:'<em>Imperō</em> takes a <strong>dative</strong> direct object — not accusative. <em>servīs</em> is dative plural: "the heir gave orders <strong>to/over the slaves</strong>." This is the same ending as the indirect object, but here there is no other DO — the dative IS the object of imperō.'},
+
+  {qt:'n',
+   s:'Flaccus opibus <T>carēbat</T>.',
+   t:'opibus',
+   q:'<em>Careō</em> takes a direct object. What case does <em>opibus</em> use?',
+   opts:['DO (ablative ending)','DO (accusative ending)','DO (dative ending)'],
+   co:0,
+   note:'<em>Careō</em> (to lack, be without) takes an <strong>ablative</strong> direct object — not accusative. <em>opibus</em> is ablative plural: "Flaccus lacked wealth." This is called the ablative of separation: you are separated from the thing you lack.'},
+
+  {qt:'n',
+   s:'Flaccus <T>captīvōs</T> in carcere ligāvit.',
+   t:'captīvōs',
+   q:'What is the grammatical role of <em>captīvōs</em>?',
+   opts:['DO — direct object (accusative)','S — subject (nominative)','G — genitive','IO — indirect object (dative)'],
+   co:0,
+   note:'<em>captīvōs</em> is accusative — the <strong>direct object</strong> of <em>ligāvit</em>: "tied the prisoners." The prisoners are the ones directly receiving the action.'},
+
+  {qt:'n',
+   s:'Flaccus ingenium <T>heredis</T> avidi laudāvit.',
+   t:'heredis',
+   q:'What is the grammatical role of <em>heredis</em>?',
+   opts:['G — genitive','S — subject (nominative)','DO — direct object (accusative)','IO — indirect object (dative)'],
+   co:0,
+   note:'<em>heredis</em> is genitive — possessive: "the talent <strong>of the greedy heir</strong>." The adjective <em>avidi</em> agrees with <em>heredis</em> in the genitive and shares its label G.'},
+
+  {qt:'n',
+   s:'Quintus cum <T>captīvīs</T> ad portum ambulābat.',
+   t:'captīvīs',
+   q:'What is the grammatical role of <em>captīvīs</em>?',
+   opts:['PP — prepositional phrase (ablative)','IO — indirect object (dative)','G — genitive','S — subject (nominative)'],
+   co:0,
+   note:'<em>captīvīs</em> is ablative after the preposition <em>cum</em> — a <strong>prepositional phrase</strong>: "with the prisoners." This is <em>cum</em> + ablative (the preposition "with"), <em>not</em> a cum clause — there is no subjunctive verb here.'},
+
+  {qt:'n',
+   s:'heres <T>contrā hostēs</T> pugnavit.',
+   t:'contrā hostēs',
+   q:'What is the grammatical role of <em>hostēs</em> in <em>contrā hostēs</em>?',
+   opts:['PP — prepositional phrase (accusative)','DO — direct object (accusative)','S — subject (nominative)','G — genitive'],
+   co:0,
+   note:'<em>contrā hostēs</em> is a <strong>prepositional phrase</strong> (<em>contrā</em> + accusative). <em>Contrā</em> always takes the accusative: "fought <strong>against the enemies</strong>." Even though <em>hostēs</em> is accusative, it is not a direct object — it is governed by the preposition.'},
+
+  {qt:'n',
+   s:'Melissa <T>trans mare</T> ad Italiam iter fēcit.',
+   t:'trans mare',
+   q:'What is the grammatical role of <em>mare</em> in <em>trans mare</em>?',
+   opts:['PP — prepositional phrase (accusative)','DO — direct object (accusative)','S — subject (nominative)','G — genitive'],
+   co:0,
+   note:'<em>trans mare</em> is a <strong>prepositional phrase</strong> (<em>trāns</em> + accusative): "across the sea." Like <em>contrā</em>, <em>trāns</em> governs the accusative — but as a PP, not a direct object.'},
+
+  {qt:'n',
+   s:'<T>insidiae</T> latrōnum perīculōsae erant.',
+   t:'insidiae',
+   q:'What is the grammatical role of <em>insidiae</em>?',
+   opts:['S — subject (nominative)','DO — direct object (accusative)','G — genitive','IO — indirect object (dative)'],
+   co:0,
+   note:'<em>insidiae</em> is nominative — the <strong>subject</strong> of <em>erant</em>: "the traps/treachery of the robbers were dangerous." The subject of <em>esse</em> is always nominative.'},
+
+  {qt:'n',
+   s:'Flaccus timōrem <T>insidiārum</T> habēbat.',
+   t:'insidiārum',
+   q:'What is the grammatical role of <em>insidiārum</em>?',
+   opts:['G — genitive','DO — direct object (accusative)','S — subject (nominative)','PP — prepositional phrase (ablative)'],
+   co:0,
+   note:'<em>insidiārum</em> is genitive plural — "fear <strong>of the traps/treachery</strong>." The genitive shows what the fear is about. <em>Timōrem</em> is the DO of <em>habēbat</em>; <em>insidiārum</em> is the genitive modifying it.'},
+
+  {qt:'n',
+   s:'"<T>Flacce</T>," clamāvit Melissa, "fugē statim!"',
+   t:'Flacce',
+   q:'What is the grammatical role of <em>Flacce</em>?',
+   opts:['Voc — vocative (direct address)','S — subject (nominative)','DO — direct object (accusative)','IO — indirect object (dative)'],
+   co:0,
+   note:'<em>Flacce</em> is the <strong>vocative</strong> of <em>Flaccus</em> — it marks direct address. 2nd-declension <em>-us</em> nouns change their ending to <em>-e</em> in the vocative singular. The vocative is set off by commas and is never the subject of a verb.'},
+
+  {qt:'n',
+   s:'"<T>serve</T>," inquit heres, "opem mihi fer!"',
+   t:'serve',
+   q:'What is the grammatical role of <em>serve</em>?',
+   opts:['Voc — vocative (direct address)','S — subject (nominative)','DO — direct object (accusative)','IO — indirect object (dative)'],
+   co:0,
+   note:'<em>serve</em> is the <strong>vocative</strong> of <em>servus</em> — direct address. It is never the grammatical subject of the verb, even though it looks like it could start the sentence. <em>Heres</em> (not <em>serve</em>) is the subject of <em>inquit</em>.'},
+
+  {qt:'n',
+   s:'<T>virtūs</T> Flacci omnibus nota erat.',
+   t:'virtūs',
+   q:'What is the grammatical role of <em>virtūs</em>?',
+   opts:['S — subject (nominative)','G — genitive','DO — direct object (accusative)','PP — prepositional phrase (ablative)'],
+   co:0,
+   note:'<em>virtūs</em> is nominative — the <strong>subject</strong> of <em>erat</em>: "the courage of Flaccus was known to all." <em>Flacci</em> (genitive) modifies it; <em>omnibus</em> (dative) is the IO of <em>nota erat</em> (was known to).'},
+
+  // ══ VERB / PARTICIPLE TYPE ══════════════════════════════════════
+
+  {qt:'v',
+   s:'latrōnēs Flaccum <T>occīdere</T> cōnātī sunt.',
+   t:'occīdere',
+   q:'What type of action word is <em>occīdere</em>?',
+   opts:['Inf — infinitive','V — verb','PAP — present active participle','PPP — perfect passive participle'],
+   co:0,
+   note:'<em>occīdere</em> is an <strong>infinitive</strong> (to kill). It has no personal ending and cannot stand as the main verb of a clause. Infinitives often follow verbs like <em>cōnor, possum, volō</em>.'},
+
+  {qt:'v',
+   s:'heres <T>cēpit</T> opēs patris.',
+   t:'cēpit',
+   q:'What type of action word is <em>cēpit</em>?',
+   opts:['V — verb','Inf — infinitive','PPP — perfect passive participle','PAP — present active participle'],
+   co:0,
+   note:'<em>cēpit</em> is a <strong>verb</strong> — it has a personal ending (3rd sg. perfect active of <em>capiō</em>) and is the main verb of its clause. Only verbs can serve as the main predicate of a sentence.'},
+
+  {qt:'v',
+   s:'servī opēs <T>portantēs</T> in villam intrāvērunt.',
+   t:'portantēs',
+   q:'What type of action word is <em>portantēs</em>?',
+   opts:['PAP — present active participle','PPP — perfect passive participle','FAP — future active participle','Inf — infinitive'],
+   co:0,
+   note:'<em>portantēs</em> is a <strong>present active participle</strong> (PAP) of <em>portō</em> — "carrying." PAPs describe an action happening at the same time as the main verb and always end in <em>-ns/-ntis</em>. Here it is nominative plural, agreeing with <em>servī</em>.'},
+
+  {qt:'v',
+   s:'captīvī <T>ligātī</T> in carcere manēbant.',
+   t:'ligātī',
+   q:'What type of action word is <em>ligātī</em>?',
+   opts:['PPP — perfect passive participle','PAP — present active participle','FAP — future active participle','Inf — infinitive'],
+   co:0,
+   note:'<em>ligātī</em> is a <strong>perfect passive participle</strong> (PPP) of <em>ligō</em> — "having been tied." PPPs describe a completed passive action. They agree with the noun they describe: here nominative plural masculine, agreeing with <em>captīvī</em>.'},
+
+  {qt:'v',
+   s:'heres, <T>morītūrus</T>, testāmentum scrīpsit.',
+   t:'morītūrus',
+   q:'What type of action word is <em>morītūrus</em>?',
+   opts:['FAP — future active participle','PAP — present active participle','PPP — perfect passive participle','Inf — infinitive'],
+   co:0,
+   note:'<em>morītūrus</em> is a <strong>future active participle</strong> (FAP) of <em>morior</em> — "about to die." FAPs describe an action that is going to happen. They often appear with forms of <em>esse</em> to form the active periphrastic conjugation.'},
+
+  {qt:'v',
+   s:'Flaccus <T>nesciēbat</T> quid accidisset.',
+   t:'nesciēbat',
+   q:'What type of action word is <em>nesciēbat</em>?',
+   opts:['V — verb','Inf — infinitive','PAP — present active participle','PPP — perfect passive participle'],
+   co:0,
+   note:'<em>nesciēbat</em> is a <strong>verb</strong> (imperfect active of <em>nesciō</em> — "did not know"). It carries a personal ending (3rd sg. <em>-bat</em>) and is the main verb of its clause. The subordinate clause <em>quid accidisset</em> is an indirect question depending on it.'},
+
+  {qt:'v',
+   s:'miles captīvōs <T>ductūrus</T> erat.',
+   t:'ductūrus',
+   q:'What type of action word is <em>ductūrus</em>?',
+   opts:['FAP — future active participle','PAP — present active participle','PPP — perfect passive participle','Inf — infinitive'],
+   co:0,
+   note:'<em>ductūrus</em> is a <strong>future active participle</strong> (FAP) of <em>dūcō</em> — "about to lead." Here with <em>erat</em> it forms the active periphrastic: "the soldier was about to lead the prisoners." The FAP always ends in <em>-ūrus/-ūra/-ūrum</em>.'},
+
+  {qt:'v',
+   s:'insidiae <T>parātae</T> latrōnēs dēlectāvērunt.',
+   t:'parātae',
+   q:'What type of action word is <em>parātae</em>?',
+   opts:['PPP — perfect passive participle','PAP — present active participle','FAP — future active participle','Inf — infinitive'],
+   co:0,
+   note:'<em>parātae</em> is a <strong>perfect passive participle</strong> (PPP) of <em>parō</em> — "having been prepared." It agrees with <em>insidiae</em> (nominative plural feminine). PPPs describe a completed passive action prior to the main verb.'},
+
+  {qt:'v',
+   s:'Melissa <T>lacrimāns</T> ad Flaccum cucurrit.',
+   t:'lacrimāns',
+   q:'What type of action word is <em>lacrimāns</em>?',
+   opts:['PAP — present active participle','PPP — perfect passive participle','FAP — future active participle','Inf — infinitive'],
+   co:0,
+   note:'<em>lacrimāns</em> is a <strong>present active participle</strong> (PAP) of <em>lacrimō</em> — "weeping." PAPs always end in <em>-ns/-ntis</em> and describe an action happening at the same time as the main verb. Here it agrees with <em>Melissa</em> (nominative).'},
+
+  {qt:'v',
+   s:'ars <T>scrībendī</T> Flaccō difficilis erat.',
+   t:'scrībendī',
+   q:'What type of action word is <em>scrībendī</em>?',
+   opts:['Gerund — verbal noun','Gerundive — verbal adjective','PAP — present active participle','Inf — infinitive'],
+   co:0,
+   note:'<em>scrībendī</em> is a <strong>gerund</strong> — a verbal noun. It is formed from the verb stem + <em>-nd-</em> + case ending: here genitive (<em>-ī</em>) = "of writing." The gerund stands alone as a noun with no noun it modifies. "The art <strong>of writing</strong> was difficult for Flaccus."'},
+
+  {qt:'v',
+   s:'captīvī ā mīlitibus <T>ligandī</T> erant.',
+   t:'ligandī',
+   q:'What type of action word is <em>ligandī</em>?',
+   opts:['Gerundive — verbal adjective','Gerund — verbal noun','PPP — perfect passive participle','FAP — future active participle'],
+   co:0,
+   note:'<em>ligandī</em> is a <strong>gerundive</strong> — a verbal adjective ("needing to be tied"). It is nominative plural masculine, agreeing with <em>captīvī</em>. With <em>esse</em>, the gerundive forms the passive periphrastic: "the prisoners <strong>had to be tied</strong>." The gerundive always has a noun it agrees with; the gerund does not.'},
+
+  {qt:'v',
+   s:'Flaccus <T>labōrandō</T> opēs collēgit.',
+   t:'labōrandō',
+   q:'What type of action word is <em>labōrandō</em>?',
+   opts:['Gerund — verbal noun','Gerundive — verbal adjective','V — verb','PPP — perfect passive participle'],
+   co:0,
+   note:'<em>labōrandō</em> is a <strong>gerund</strong> — ablative case (<em>-ō</em> ending) = "by working." The ablative gerund expresses means or manner. It has no noun it modifies; it is itself the noun. "Flaccus collected wealth <strong>by working</strong>."'},
+
+  // ══ CONSTRUCTION IDENTIFICATION ═════════════════════════════════
+
+  {qt:'c',
+   s:'<T>captīvō ligātō</T>, Flaccus tandem dormīvit.',
+   t:'captīvō ligātō',
+   q:'What type of construction is the boxed phrase?',
+   opts:['ablative absolute','cum clause','participial phrase','relative clause'],
+   co:0,
+   note:'<em>captīvō ligātō</em> = <strong>ablative absolute</strong>. Both the noun (<em>captīvō</em>) and the participle (<em>ligātō</em>, PPP) are in the ablative. Neither is the subject of the main clause. Key test: are both parts ablative and outside the main clause? → ablative absolute.'},
+
+  {qt:'c',
+   s:'<T>cum heres opēs cēpisset</T>, pater tristissimus erat.',
+   t:'cum heres opēs cēpisset',
+   q:'What type of construction is the boxed phrase?',
+   opts:['cum clause','ablative absolute','indirect statement (AcI)','relative clause'],
+   co:0,
+   note:'<em>cum heres opēs cēpisset</em> = <strong>cum clause</strong>. <em>Cum</em> + subjunctive verb (<em>cēpisset</em>, plupf. subj.) = when/since/although. The subjunctive mood is the signal — if <em>cum</em> is followed by a subjunctive, it is a conjunction, not the preposition "with."'},
+
+  {qt:'c',
+   s:'Flaccus dīxit <T>heredem avidum esse</T>.',
+   t:'heredem avidum esse',
+   q:'What type of construction is the boxed phrase?',
+   opts:['indirect statement (AcI)','cum clause','relative clause','participial phrase'],
+   co:0,
+   note:'<em>heredem avidum esse</em> = <strong>indirect statement (AcI)</strong>. After a verb of saying/thinking, the subject of the reported clause goes accusative (<em>heredem</em>) and the verb becomes an infinitive (<em>esse</em>). "Flaccus said that the heir was greedy."'},
+
+  {qt:'c',
+   s:'heres, <T>opēs amissās videns</T>, lacrimāvit.',
+   t:'opēs amissās videns',
+   q:'What type of construction is the boxed phrase?',
+   opts:['participial phrase','ablative absolute','cum clause','indirect statement (AcI)'],
+   co:0,
+   note:'<em>opēs amissās videns</em> = <strong>participial phrase</strong> (no ablative). <em>videns</em> (PAP, nom. sg.) describes <em>heres</em> (nominative subject). Not an ablative absolute — <em>heres</em> and <em>videns</em> are both nominative, not ablative.'},
+
+  {qt:'c',
+   s:'Hermogenes ad villam <T>quam heres aedificāverat</T> vēnit.',
+   t:'quam heres aedificāverat',
+   q:'What type of construction is the boxed phrase?',
+   opts:['relative clause','cum clause','ablative absolute','participial phrase'],
+   co:0,
+   note:'<em>quam heres aedificāverat</em> = <strong>relative clause</strong>. <em>Quam</em> is a relative pronoun referring back to <em>villam</em>. The verb <em>aedificāverat</em> is indicative — not subjunctive — confirming this is a relative clause, not a cum clause.'},
+
+  {qt:'c',
+   s:'<T>cum Melissa infantem vidēret</T>, Quintus dormiēbat.',
+   t:'cum Melissa infantem vidēret',
+   q:'What type of construction is the boxed phrase?',
+   opts:['cum clause','ablative absolute','relative clause','indirect statement (AcI)'],
+   co:0,
+   note:'<em>cum Melissa infantem vidēret</em> = <strong>cum clause</strong>. <em>Cum</em> + <em>vidēret</em> (impf. subj.) = "when/while Melissa was seeing the baby." Imperfect subjunctive in a cum clause = action happening at the same time as the main verb.'},
+
+  {qt:'c',
+   s:'<T>insidiīs parātīs</T>, latrōnēs Flaccum exspectābant.',
+   t:'insidiīs parātīs',
+   q:'What type of construction is the boxed phrase?',
+   opts:['ablative absolute','participial phrase','cum clause','relative clause'],
+   co:0,
+   note:'<em>insidiīs parātīs</em> = <strong>ablative absolute</strong>. Both <em>insidiīs</em> (noun, abl. pl.) and <em>parātīs</em> (PPP, abl. pl.) are ablative, and neither is the subject of the main clause. "With the traps having been set."'},
+
+  {qt:'c',
+   s:'Melissa crēdidit <T>Flaccum in perīculō esse</T>.',
+   t:'Flaccum in perīculō esse',
+   q:'What type of construction is the boxed phrase?',
+   opts:['indirect statement (AcI)','cum clause','participial phrase','relative clause'],
+   co:0,
+   note:'<em>Flaccum in perīculō esse</em> = <strong>indirect statement (AcI)</strong>. After <em>crēdidit</em>, the subject of the reported idea is accusative (<em>Flaccum</em>) and the verb is an infinitive (<em>esse</em>). "Melissa believed that Flaccus was in danger."'},
+
+  {qt:'c',
+   s:'Flaccus mīlitem <T>captīvōs ducentem</T> vidit.',
+   t:'captīvōs ducentem',
+   q:'What type of construction is the boxed phrase?',
+   opts:['participial phrase','ablative absolute','relative clause','cum clause'],
+   co:0,
+   note:'<em>captīvōs ducentem</em> = <strong>participial phrase</strong> (no ablative). <em>ducentem</em> (PAP, acc. sg.) describes <em>mīlitem</em> (acc. sg., the direct object). Not an ablative absolute — both <em>mīlitem</em> and <em>ducentem</em> are accusative, not ablative.'},
+
+];
+
+// ── state ──────────────────────────────────────────────────────────
+let drawn=[], answered={}, sC=0, sT=0;
+
+function newSet(){
+  const idx=[...Array(DB.length).keys()];
+  for(let i=idx.length-1;i>0;i--){const j=0|Math.random()*(i+1);[idx[i],idx[j]]=[idx[j],idx[i]];}
+  drawn=idx.slice(0,5); answered={};
+  renderCards(); window.scrollTo(0,0);
+}
+
+function updS(){const d=document.getElementById('score-d');if(d)d.textContent=sT>0?`${sC}/${sT}`:''}
+
+function renderCards(){
+  const pg=document.getElementById('page');
+  pg.innerHTML=drawn.map((di,k)=>{
+    const it=DB[di];
+    const uid=`q${di}`;
+    const sentH=it.s.replace('<T>','<span class="tgt">').replace('</T>','</span>');
+    const sh=shuffleOpts(it.opts,it.co);
+    const extra=it.qt==='c'?' ctype':'';
+    return `<div class="card${extra}">
+      <div class="qstrip ${it.qt}"></div>
+      <div class="cnum">Q${k+1}</div>
+      <div class="cs">${sentH}</div>
+      <div class="cq">${it.q}</div>
+      <div class="mc">${sh.opts.map((o,oi)=>`<button class="mb" id="${uid}-b${oi}" onclick="ans(${di},'${uid}',${oi},${sh.co})">${o}</button>`).join('')}</div>
+      <div class="fb" id="${uid}-fb"></div>
+    </div>`;
+  }).join('');
+}
+
+function shuffleOpts(opts,co){
+  const correct=opts[co];
+  const arr=[...opts];
+  for(let i=arr.length-1;i>0;i--){const j=0|Math.random()*(i+1);[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return {opts:arr,co:arr.indexOf(correct)};
+}
+
+function ans(di,uid,chosen,correct){
+  if(answered[uid])return;
+  answered[uid]=true; sT++;
+  const ok=(chosen===correct);if(ok)sC++;updS();
+  document.querySelectorAll(`[id^="${uid}-b"]`).forEach(b=>b.disabled=true);
+  document.getElementById(`${uid}-b${chosen}`).classList.add(ok?'ok':'err');
+  if(!ok)document.getElementById(`${uid}-b${correct}`).classList.add('ok');
+  const fb=document.getElementById(`${uid}-fb`);
+  fb.innerHTML=(ok?'✓ ':'✗ ')+DB[di].note;
+  fb.className=`fb show ${ok?'ok':'err'}`;
+}
+
+// ── reference chart ────────────────────────────────────────────────
+function toggleRef(){
+  const body=document.getElementById('ref-body');
+  const btn=document.querySelector('.tog');
+  const open=body.classList.toggle('open');
+  btn.textContent=(open?'▼ Hide':'▶ Show')+' reference chart';
+  if(open&&!body.innerHTML.trim())buildRef();
+}
+
+function buildRef(){
+  document.getElementById('ref-body').innerHTML=`
+
+<p style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#1a2a4a;margin:0 0 8px;">
+  <span style="display:inline-block;width:10px;height:10px;background:#3a8abf;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>
+  Word Roles (nouns &amp; adjectives)
+</p>
+<table class="rt">
+  <tr><th>Label</th><th>Role</th><th>Case</th><th>Example</th></tr>
+  <tr><td style="font-weight:700;">S</td><td>Subject</td><td>Nominative</td><td><em>heres villam ēmit</em></td></tr>
+  <tr><td style="font-weight:700;">G</td><td>Genitive (possession/description)</td><td>Genitive</td><td><em>timor heredis</em></td></tr>
+  <tr><td style="font-weight:700;">IO</td><td>Indirect Object</td><td>Dative</td><td><em>heredi opem tulit; servīs imperāvit</em></td></tr>
+  <tr><td style="font-weight:700;">DO</td><td>Direct Object</td><td>Accusative</td><td><em>heredem invēnit</em></td></tr>
+  <tr><td style="font-weight:700;">PP</td><td>Prepositional Phrase</td><td>Varies (abl. or acc.)</td><td><em>cum captīvīs; contrā hostēs</em></td></tr>
+  <tr><td style="font-weight:700;">Voc</td><td>Vocative (direct address)</td><td>Vocative</td><td><em>"Flacce," clamāvit</em></td></tr>
+</table>
+<p style="font-size:.76rem;color:#555;margin:8px 0 0;">Special verbs: <em>imperō</em> takes a <strong>dative</strong> DO &nbsp;|&nbsp; <em>careō</em> takes an <strong>ablative</strong> DO &nbsp;|&nbsp; <em>cum</em> + ablative (no subjunctive) = PP "with."</p>
+
+<p style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#1a2a4a;margin:18px 0 8px;">
+  <span style="display:inline-block;width:10px;height:10px;background:#9c6a1a;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>
+  Construction Types
+</p>
+<table class="rt">
+  <tr><th>Type</th><th>Signal</th><th>Key test</th><th>Example</th></tr>
+  <tr><td style="font-weight:700;">Cum clause</td><td><em>cum</em> + subjunctive verb</td><td>verb is subjunctive mood</td><td><em>cum heres cēpisset…</em></td></tr>
+  <tr><td style="font-weight:700;">Ablative absolute</td><td>noun + participle, both ablative</td><td>neither is subject of main clause</td><td><em>captīvō ligātō…</em></td></tr>
+  <tr><td style="font-weight:700;">Indirect statement (AcI)</td><td>acc. noun + infinitive after verb of saying/thinking</td><td>subject → accusative; verb → infinitive</td><td><em>dīxit heredem esse…</em></td></tr>
+  <tr><td style="font-weight:700;">Participial phrase</td><td>participle agrees with S or DO (nominative/accusative)</td><td>not ablative → not abl. absolute</td><td><em>opēs videns…</em></td></tr>
+  <tr><td style="font-weight:700;">Relative clause</td><td><em>qui / quae / quod</em> + indicative verb</td><td>indicative (not subjunctive) verb</td><td><em>quam heres aedificāverat…</em></td></tr>
+</table>
+<p style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#1a2a4a;margin:18px 0 8px;">
+  <span style="display:inline-block;width:10px;height:10px;background:#2a7a5a;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>
+  Verb / Participle Types
+</p>
+<table class="rt">
+  <tr><th>Label</th><th>Type</th><th>Key features</th><th>Example</th></tr>
+  <tr><td style="font-weight:700;">V</td><td>Verb</td><td>has personal ending; serves as main verb</td><td><em>cēpit, nesciēbat</em></td></tr>
+  <tr><td style="font-weight:700;">Inf</td><td>Infinitive</td><td>no personal ending; often after <em>possum, volō, cōnor</em></td><td><em>occīdere, esse</em></td></tr>
+  <tr><td style="font-weight:700;">PAP</td><td>Present Active Participle</td><td>ends in <em>-ns/-ntis</em>; action simultaneous with main verb</td><td><em>portantēs, lacrimāns</em></td></tr>
+  <tr><td style="font-weight:700;">FAP</td><td>Future Active Participle</td><td>ends in <em>-ūrus/-ūra/-ūrum</em>; action after main verb</td><td><em>morītūrus, ductūrus</em></td></tr>
+  <tr><td style="font-weight:700;">PPP</td><td>Perfect Passive Participle</td><td>ends in <em>-us/-a/-um</em>; completed passive action</td><td><em>ligātī, parātae</em></td></tr>
+  <tr><td style="font-weight:700;">Gerund</td><td>Verbal Noun</td><td>stem + <em>-nd-</em> + case ending; stands alone (no noun it modifies)</td><td><em>scrībendī</em> (gen.), <em>labōrandō</em> (abl.)</td></tr>
+  <tr><td style="font-weight:700;">Gerundive</td><td>Verbal Adjective ("needing to be ___ed")</td><td>stem + <em>-ndus/-nda/-ndum</em>; agrees with a noun; passive meaning</td><td><em>ligandī</em> (nom. pl. m.) = must be tied</td></tr>
+</table>
+<p style="font-size:.76rem;color:#888;margin-top:12px;">Database: ${DB.length} items · 5 drawn per set. Blue = word role &nbsp;|&nbsp; Green = verb/participle type &nbsp;|&nbsp; Amber = construction type.</p>`;
+}
+
+buildRef();
+newSet();
+</script>
+</body>
+</html>
